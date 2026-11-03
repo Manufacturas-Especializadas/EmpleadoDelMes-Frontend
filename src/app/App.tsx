@@ -3,6 +3,8 @@ import { home, roles, useAuth } from '@/features/auth/session'
 import { AuthPage } from '@/pages/AuthPage'
 import { HomePage } from '@/pages/HomePage'
 import { AppLayout } from '@/shared/components/AppLayout'
+import { CampaignsPage } from '@/pages/CampaignsPage'
+
 function Guard({ role }: { role?: string }) {
   const user = useAuth()
   if (!user) return <Navigate to="/login" replace />
@@ -37,6 +39,10 @@ export default function App() {
               <Route path={role.path} element={<HomePage role={role.label} />} />
             </Route>
           ))}
+
+          <Route element={<Guard role="Administrator" />}>
+            <Route path="/admin/campaigns" element={<CampaignsPage />} />
+          </Route>
         </Route>
       </Route>
       <Route path="/access-denied" element={<Message title="Acceso denegado" />} />

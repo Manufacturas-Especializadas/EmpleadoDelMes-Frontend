@@ -49,6 +49,7 @@ export function useAuth() {
     () => user,
   )
 }
+
 export const roles = [
   { name: 'Administrator', path: '/admin', label: 'Administración' },
   { name: 'Sponsor', path: '/sponsor', label: 'Patrocinador' },
@@ -56,8 +57,13 @@ export const roles = [
   { name: 'Safety', path: '/safety', label: 'Seguridad' },
   { name: 'Quality', path: '/quality', label: 'Calidad' },
 ]
+
 export function home(user: User) {
   return user.mustChangePassword
     ? '/change-password'
     : (roles.find((role) => user.roles.includes(role.name))?.path ?? '/access-denied')
+}
+
+export function getAccessToken(): string | null {
+  return tokens?.accessToken ?? null
 }

@@ -36,6 +36,20 @@ export function AppLayout() {
                   {r.label}
                 </NavLink>
               ))}
+
+            {user.roles.includes('Administrator') && (
+              <NavLink
+                to="/admin/campaigns"
+                className={({ isActive }) =>
+                  `rounded-lg px-4 py-3 ${
+                    isActive ? 'bg-teal-900 text-white' : 'text-slate-700 hover:bg-slate-100'
+                  }`
+                }
+              >
+                Convocatorias
+              </NavLink>
+            )}
+
             <NavLink to="/change-password" className="px-4 py-3">
               Cambiar contraseña
             </NavLink>
