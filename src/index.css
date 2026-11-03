@@ -1,1 +1,26 @@
-@import 'tailwindcss';
+﻿@import 'tailwindcss';
+@layer base {
+  body {
+    @apply m-0 bg-slate-50 text-slate-900 antialiased;
+  }
+  label {
+    @apply block text-sm font-medium text-slate-700;
+  }
+  input {
+    @apply mt-2 block w-full rounded-lg border border-slate-300 bg-white px-3 py-3;
+  }
+  button {
+    @apply cursor-pointer rounded-lg disabled:cursor-wait disabled:opacity-60;
+  }
+  :focus-visible {
+    @apply outline-2 outline-offset-4 outline-teal-700;
+  }
+}
+@layer components {
+  .primary {
+    @apply rounded-lg bg-teal-900 px-5 py-3 font-semibold text-white hover:bg-teal-800;
+  }
+  .eyebrow {
+    @apply text-xs font-semibold uppercase tracking-widest text-teal-800;
+  }
+}

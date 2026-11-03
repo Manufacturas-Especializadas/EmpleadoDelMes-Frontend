@@ -75,3 +75,15 @@ CI/CD: GitHub Actions.
 
 Proyecto interno. Permisos de distribución pendientes
 de definición por la organización.
+
+## Autenticación — Tarea 8A
+
+La sesión guarda accessToken y refreshToken exclusivamente en memoria, sin decodificarlos. Una recarga completa requiere iniciar sesión nuevamente. El login consulta /api/auth/me antes de habilitar las rutas y combina mustChangePassword con X-Must-Change-Password. displayName puede ser nulo: se muestra userName como alternativa.
+
+El servicio tipado incluye login, me, change-password y refresh. La renovación automática queda pendiente deliberadamente: un 401 en una operación autenticada limpia la sesión y requiere nuevo login; no existen reintentos ni ciclos de renovación. expiresIn se recibe como parte del contrato; la expiración se valida por el servidor al solicitar operaciones. Un 403 muestra el mensaje de acceso restringido sin renovar tokens.
+
+Las contraseñas permanecen únicamente en los campos del formulario durante su envío. El cambio exitoso elimina ambos tokens y solicita nuevo ingreso. El cierre de sesión es local, no revoca tokens en el servidor. Los guards verifican cada rol explícitamente, sin privilegio implícito de Administrator para otras áreas. Para usuarios con varios roles se elige el primero en este orden: Administrator, Sponsor, HumanResources, Safety, Quality; la navegación muestra sus áreas autorizadas.
+
+El cliente HTTP central admite GET, POST, PUT, PATCH, JSON, Bearer opcional, AbortSignal y errores estructurados. Las futuras operaciones protegidas deberán enviar el token desde la gestión de sesión y aplicar la misma política de 401. Los guards son controles de experiencia de usuario: la autorización real corresponde al backend.
+
+No se agregaron pruebas automatizadas. La integración con usuarios reales y la revisión visual en navegador quedan pendientes; no se modificó el backend ni se conectó SQL Server.
