@@ -1,15 +1,20 @@
-﻿import { useSyncExternalStore } from 'react'
+﻿import { ApiError } from '@/shared/api/httpClient'
+import { useSyncExternalStore } from 'react'
 import { authApi } from './authApi'
 import type { Tokens, User } from './types'
 let user: User | null = null
 let tokens: Tokens | null = null
 let generation = 0
+let expiresAt = 0
+let refreshing: Promise<string | null> | null = null
 const listeners = new Set<() => void>()
 function emit() {
   listeners.forEach((listener) => listener())
 }
 export function logout() {
   generation++
+  refreshing = null
+  expiresAt = 0
   tokens = null
   user = null
   emit()
@@ -21,6 +26,7 @@ export async function login(userName: string, password: string) {
   const profile = await authApi.me(response.data.accessToken)
   if (version !== generation) return
   tokens = response.data
+  expiresAt = Date.now() + response.data.expiresIn * 1000
   user = {
     ...profile.data,
     mustChangePassword:
@@ -30,7 +36,9 @@ export async function login(userName: string, password: string) {
 }
 export async function changePassword(current: string, next: string) {
   if (!tokens) throw new Error('Inicia sesión nuevamente.')
+  const version = generation
   await authApi.changePassword(tokens.accessToken, current, next)
+  if (version !== generation) return
   logout()
 }
 export function useAuth() {
@@ -61,4 +69,43 @@ export function home(user: User) {
 
 export function getAccessToken(): string | null {
   return tokens?.accessToken ?? null
+}
+
+export function getSessionVersion() {
+  return generation
+}
+export async function prepareAccessToken() {
+  if (tokens && !user?.mustChangePassword && Date.now() >= expiresAt - 30_000)
+    return refreshSession(tokens.accessToken)
+  return getAccessToken()
+}
+export async function refreshSession(rejectedToken: string): Promise<string | null> {
+  if (!tokens || !user || user.mustChangePassword) return null
+  if (tokens.accessToken !== rejectedToken) return tokens.accessToken
+  if (refreshing) return refreshing
+  const version = generation
+  const refreshToken = tokens.refreshToken
+  const operation = (async () => {
+    try {
+      const response = await authApi.refresh(refreshToken)
+      if (version !== generation) return null
+      tokens = response.data
+      expiresAt = Date.now() + tokens.expiresIn * 1000
+      return tokens.accessToken
+    } catch (error) {
+      if (
+        version === generation &&
+        error instanceof ApiError &&
+        [400, 401, 403].includes(error.status)
+      )
+        logout()
+      throw error
+    }
+  })()
+  refreshing = operation
+  try {
+    return await operation
+  } finally {
+    if (refreshing === operation) refreshing = null
+  }
 }
