@@ -1,4 +1,4 @@
-import { useState } from 'react'
+﻿import { useState } from 'react'
 import { Link, useParams } from 'react-router'
 import { getCampaign, changeCampaign, type CampaignAction } from '../campaignsApi'
 import { useQuery } from '@/shared/hooks/useQuery'
@@ -69,7 +69,7 @@ export function CampaignDetailPage() {
     <div className="space-y-5">
       <PageHeader
         title={campaign ? formatMonth(campaign.evaluationMonth) : 'Detalle de convocatoria'}
-        description={id}
+        description="Administra los periodos y consulta el proceso de reconocimiento."
         actions={<Link to="/admin/campaigns">Volver al listado</Link>}
       />
       {message && <p role="status">{message}</p>}

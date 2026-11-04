@@ -1,5 +1,5 @@
-import { useState } from 'react'
-import { useSearchParams } from 'react-router'
+﻿import { useState } from 'react'
+import { CampaignSelector } from '@/shared/components/CampaignSelector'
 import { reviewApi } from '../reviewApi'
 import type { ReviewCandidate } from '../types'
 import { ReviewDetail } from '../components/ReviewDetail'
@@ -19,9 +19,11 @@ function OpinionBadge({ value }: { value: boolean }) {
   )
 }
 export function ReviewPage() {
-  const [params] = useSearchParams()
+  return <CampaignSelector>{(id) => <CampaignContent campaignId={id} />}</CampaignSelector>
+}
+function CampaignContent({ campaignId }: { campaignId: string }) {
   const [filter, setFilter] = useState({
-    campaignId: params.get('campaignId') ?? '',
+    campaignId: campaignId,
     term: '',
     page: 1,
   })
@@ -37,11 +39,7 @@ export function ReviewPage() {
         title="Revisión integral"
         description="Consulta de candidatos preseleccionados, postulaciones válidas y opiniones disponibles."
       />
-      <ListFilters
-        campaign
-        initialCampaign={filter.campaignId}
-        onSearch={(term, campaignId) => setFilter({ term, campaignId, page: 1 })}
-      />
+      <ListFilters onSearch={(term) => setFilter({ term, campaignId, page: 1 })} />
       {query.loading && <LoadingState />}
       {query.error && <ErrorState message={query.error} onRetry={query.reload} />}
       {query.data && (

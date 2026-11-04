@@ -19,11 +19,10 @@ import { StatusBadge } from '@/shared/components/StatusBadge'
 import { LoadingState } from '@/shared/components/LoadingState'
 import { ErrorState } from '@/shared/components/ErrorState'
 export function OpinionsPage() {
-  const [params] = useSearchParams()
+  const [params, setParams] = useSearchParams()
   const query = useQuery('opinion-campaigns', opinionsApi.campaigns)
-  const [selectedId, setSelectedId] = useState('')
   const campaigns = sortCampaigns(query.data ?? [])
-  const selected = defaultCampaign(campaigns, selectedId || params.get('campaignId') || undefined)
+  const selected = defaultCampaign(campaigns, params.get('campaignId') || undefined)
   return (
     <div>
       <PageHeader
@@ -42,7 +41,14 @@ export function OpinionsPage() {
         <>
           <label className="my-5 max-w-xl">
             Convocatoria
-            <select value={selected.id} onChange={(event) => setSelectedId(event.target.value)}>
+            <select
+              value={selected.id}
+              onChange={(event) => {
+                const next = new URLSearchParams(params)
+                next.set('campaignId', event.target.value)
+                setParams(next)
+              }}
+            >
               {campaigns.map((item) => (
                 <option key={item.id} value={item.id}>
                   {campaignMonth(item.evaluationMonth)} ·{' '}
