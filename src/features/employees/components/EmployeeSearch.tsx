@@ -1,4 +1,4 @@
-import { useState } from 'react'
+﻿import { useState } from 'react'
 import { employeesApi } from '../employeesApi'
 import type { Employee } from '../types'
 import { useQuery } from '@/shared/hooks/useQuery'
@@ -25,7 +25,7 @@ export function EmployeeSearch({
   return (
     <fieldset disabled={disabled}>
       <ListFilters onSearch={(term) => setFilter({ term, page: 1 })} />
-      {query.loading && <LoadingState />}
+      {query.loading && <LoadingState variant="table" />}
       {query.error && <ErrorState message={query.error} onRetry={query.reload} />}
       {query.data && (
         <>

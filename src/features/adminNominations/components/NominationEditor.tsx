@@ -126,7 +126,7 @@ function Editor({
               <fieldset disabled={blocked || operation.busy}>
                 <legend>Cualidades</legend>
                 {qualities.map((item) => (
-                  <label key={item.value} className="flex items-center gap-2">
+                  <label key={item.value} className="choice-row">
                     <input
                       type="checkbox"
                       className="w-auto"
@@ -167,7 +167,7 @@ function Editor({
                   </button>
                   <button
                     type="button"
-                    className="border px-3"
+                    className="danger"
                     disabled={!reason.trim()}
                     onClick={() => setAction('cancel')}
                   >

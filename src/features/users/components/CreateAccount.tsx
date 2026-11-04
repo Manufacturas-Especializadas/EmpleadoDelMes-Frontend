@@ -1,3 +1,4 @@
+﻿import { SuccessMessage } from '@/shared/components/SuccessMessage'
 import { useState } from 'react'
 import { EmployeeSearch, type Employee } from '@/features/employees'
 import { usersApi } from '../usersApi'
@@ -46,11 +47,13 @@ export function CreateAccount({
     >
       {created ? (
         <div className="space-y-4">
-          <p role="status">{created.message}</p>
+          <SuccessMessage>{created.message}</SuccessMessage>
           <p>Usuario: {created.account.userName}</p>
           <p>
             Contraseña temporal:{' '}
-            <code className="break-all select-all">{created.temporaryPassword}</code>
+            <code className="mt-2 block rounded-control border border-border bg-canvas p-4 font-mono text-lg break-all select-all">
+              {created.temporaryPassword}
+            </code>
           </p>
           <p className="text-amber-800">
             Entrégala de forma privada. Al cerrar esta ventana no podrás volver a consultarla aquí.

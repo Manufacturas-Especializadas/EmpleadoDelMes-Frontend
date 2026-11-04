@@ -1,4 +1,5 @@
-﻿export const adminModules = [
+﻿import type { IconName } from '@/shared/components/Icon'
+export const adminModules = [
   {
     path: '/admin/campaigns',
     label: 'Convocatorias',
@@ -48,3 +49,16 @@
     description: 'Revisa y confirma la importación de patrocinadores.',
   },
 ]
+
+export function navigationIcon(path: string): IconName {
+  if (path.includes('imports')) return 'file'
+  if (path.includes('campaigns')) return 'calendar'
+  if (path.includes('preselections')) return 'checkUser'
+  if (path.includes('review')) return 'review'
+  if (path.includes('employees')) return 'users'
+  if (path.includes('users')) return 'shield'
+  if (path.includes('nominations') || path === '/sponsor') return 'clipboard'
+  if (path === '/change-password') return 'lock'
+  if (['/human-resources', '/safety', '/quality'].includes(path)) return 'message'
+  return 'home'
+}

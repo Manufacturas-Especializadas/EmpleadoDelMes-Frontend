@@ -1,4 +1,4 @@
-import { reviewApi } from '../reviewApi'
+﻿import { reviewApi } from '../reviewApi'
 import type { ReviewCandidate } from '../types'
 import { qualityLabels } from '@/features/nominations'
 import { useQuery } from '@/shared/hooks/useQuery'
@@ -34,7 +34,7 @@ export function ReviewDetail({
           <StatusBadge>{detail.isPreselected ? 'Preseleccionado' : 'Sin preselección'}</StatusBadge>
           <h3 className="font-semibold">Postulaciones</h3>
           {detail.nominations.map((item) => (
-            <article key={item.id} className="rounded border p-3">
+            <article key={item.id} className="detail-card">
               <p>
                 {item.sponsorFullName} · {item.sponsorPayrollNumber}
               </p>
@@ -47,7 +47,7 @@ export function ReviewDetail({
           {detail.opinions
             .filter((item) => item.opinionSource !== 4)
             .map((item) => (
-              <article key={item.opinionSource} className="rounded border p-3">
+              <article key={item.opinionSource} className="detail-card">
                 <h4>
                   {
                     { 1: 'Recursos Humanos', 2: 'Seguridad', 3: 'Calidad', 4: 'Jefe inmediato' }[

@@ -1,4 +1,5 @@
-﻿import { useId, type ComponentProps } from 'react'
+﻿import { Icon } from './Icon'
+import { useId, type ComponentProps } from 'react'
 type Props = ComponentProps<'input'> & { label: string; error?: string; hint?: string }
 export function TextField({ label, error, hint, id, ...props }: Props) {
   const generatedId = useId()
@@ -10,12 +11,20 @@ export function TextField({ label, error, hint, id, ...props }: Props) {
   return (
     <div className="min-w-0 max-w-full">
       <label htmlFor={inputId}>{label}</label>
-      <input
-        {...props}
-        id={inputId}
-        aria-invalid={error ? true : props['aria-invalid']}
-        aria-describedby={description}
-      />
+      <div className="relative">
+        {props.type === 'search' && (
+          <span className="pointer-events-none absolute inset-y-0 left-3 flex items-center text-muted">
+            <Icon name="search" />
+          </span>
+        )}
+        <input
+          {...props}
+          className={`${props.type === 'search' ? 'pl-10' : ''} ${props.className ?? ''}`}
+          id={inputId}
+          aria-invalid={error ? true : props['aria-invalid']}
+          aria-describedby={description}
+        />
+      </div>
       {hint && (
         <p id={`${inputId}-hint`} className="mt-1 text-sm text-slate-500">
           {hint}

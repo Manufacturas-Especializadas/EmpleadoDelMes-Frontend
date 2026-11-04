@@ -39,7 +39,7 @@ export function OpinionsPage() {
       )}
       {selected && (
         <>
-          <label className="my-5 max-w-xl">
+          <label className="campaign-filter">
             Convocatoria
             <select
               value={selected.id}
@@ -82,7 +82,7 @@ function CampaignOpinions({ campaign }: { campaign: OpinionCampaign }) {
     <div>
       <ListFilters onSearch={(term) => setFilter({ campaignId: campaign.id, term, page: 1 })} />{' '}
       {message && <p role="status">{message}</p>}
-      {query.loading && <LoadingState />}
+      {query.loading && <LoadingState variant="table" />}
       {query.error && <ErrorState message={query.error} onRetry={query.reload} />}
       {query.data && (
         <>

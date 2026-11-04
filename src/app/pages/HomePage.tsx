@@ -1,16 +1,22 @@
-﻿import { Link } from 'react-router'
+﻿import { Icon } from '@/shared/components/Icon'
+import { Link } from 'react-router'
 import { useAuth } from '@/features/auth'
-import { adminModules } from '../navigation'
+import { adminModules, navigationIcon } from '../navigation'
 export function HomePage({ role }: { role: string }) {
   const user = useAuth()
   return (
     <div className="space-y-8">
-      <section className="surface-panel p-6 sm:p-8">
-        <p className="eyebrow">{role}</p>
-        <h1 className="mt-3 text-3xl font-bold">
+      <section className="welcome-panel">
+        <div className="mb-6 flex items-center gap-3">
+          <span className="icon-tile">
+            <Icon name="award" />
+          </span>
+          <p className="eyebrow">Reconocimiento MESA · {role}</p>
+        </div>
+        <h1 className="max-w-2xl text-3xl leading-tight font-semibold sm:text-4xl">
           Bienvenido, {user?.displayName || user?.userName}
         </h1>
-        <p className="mt-3 text-muted">
+        <p className="mt-4 max-w-xl text-sm leading-7 text-muted sm:text-base">
           Empleado del Mes · Tu espacio de trabajo para el proceso de reconocimiento.
         </p>
       </section>
@@ -22,14 +28,17 @@ export function HomePage({ role }: { role: string }) {
               {adminModules
                 .filter((item) => item.group === group)
                 .map((item) => (
-                  <Link
-                    key={item.path}
-                    to={item.path}
-                    className="surface-panel group p-5 transition-shadow hover:shadow-md"
-                  >
-                    <h3 className="font-semibold text-primary group-hover:underline">
-                      {item.label} <span aria-hidden="true">→</span>
-                    </h3>
+                  <Link key={item.path} to={item.path} className="module-card group">
+                    <div className="mb-5 flex items-center justify-between">
+                      <span className="icon-tile">
+                        <Icon name={navigationIcon(item.path)} />
+                      </span>
+                      <Icon
+                        name="arrow"
+                        className="size-4 text-muted transition-transform group-hover:translate-x-0.5"
+                      />
+                    </div>
+                    <h3 className="text-base font-semibold text-ink">{item.label}</h3>
                     <p className="mt-3 text-sm leading-6 text-muted">{item.description}</p>
                   </Link>
                 ))}

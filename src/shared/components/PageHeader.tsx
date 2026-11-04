@@ -11,13 +11,15 @@ export function PageHeader({
   actions?: ReactNode
 }) {
   return (
-    <header className="flex flex-wrap items-center justify-between gap-4">
+    <header className="page-header">
       <div>
         {eyebrow && <p className="eyebrow">{eyebrow}</p>}
-        <h1 className="mt-2 text-3xl font-bold">{title}</h1>
-        {description && <p className="mt-2 text-sm text-slate-600">{description}</p>}
+        <h1 className="page-title mt-2">{title}</h1>
+        {description && (
+          <p className="mt-3 max-w-2xl text-sm leading-6 text-muted">{description}</p>
+        )}
       </div>
-      {actions}
+      {actions && <div className="flex max-w-full flex-wrap items-center gap-3">{actions}</div>}
     </header>
   )
 }

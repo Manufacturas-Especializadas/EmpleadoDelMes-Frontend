@@ -10,7 +10,7 @@ export function ListFilters({
   const [term, setTerm] = useState('')
   return (
     <form
-      className="my-4 flex flex-wrap items-end gap-3"
+      className="filter-panel"
       onSubmit={(event) => {
         event.preventDefault()
         onSearch(term.trim())

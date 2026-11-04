@@ -1,10 +1,10 @@
 import type { ReactNode } from 'react'
 const tones = {
-  neutral: 'bg-slate-100 text-slate-700',
-  success: 'bg-emerald-100 text-emerald-800',
-  warning: 'bg-amber-100 text-amber-800',
-  info: 'bg-blue-100 text-blue-800',
-  danger: 'bg-red-100 text-red-800',
+  neutral: 'bg-canvas text-secondary',
+  success: 'bg-success-soft text-success',
+  warning: 'bg-warning-soft text-warning',
+  info: 'bg-info-soft text-info',
+  danger: 'bg-danger-soft text-danger',
 }
 export function StatusBadge({
   children,
@@ -14,7 +14,10 @@ export function StatusBadge({
   tone?: keyof typeof tones
 }) {
   return (
-    <span className={`inline-flex rounded-full px-3 py-1 text-xs font-semibold ${tones[tone]}`}>
+    <span
+      className={`inline-flex items-center gap-1.5 rounded-full px-2.5 py-1 text-xs leading-5 font-semibold ${tones[tone]}`}
+    >
+      <span aria-hidden="true" className="size-1.5 shrink-0 rounded-full bg-current" />
       {children}
     </span>
   )

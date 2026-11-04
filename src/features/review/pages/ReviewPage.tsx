@@ -40,7 +40,7 @@ function CampaignContent({ campaignId }: { campaignId: string }) {
         description="Consulta de candidatos preseleccionados, postulaciones válidas y opiniones disponibles."
       />
       <ListFilters onSearch={(term) => setFilter({ term, campaignId, page: 1 })} />
-      {query.loading && <LoadingState />}
+      {query.loading && <LoadingState variant="table" />}
       {query.error && <ErrorState message={query.error} onRetry={query.reload} />}
       {query.data && (
         <>

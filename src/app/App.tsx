@@ -28,7 +28,7 @@ function Message({ title }: { title: string }) {
   return (
     <main className="p-12">
       <h1 className="text-3xl font-bold">{title}</h1>
-      <Link to="/" className="mt-6 inline-block text-teal-800">
+      <Link to="/" className="mt-6 inline-block text-primary">
         Volver al inicio
       </Link>
     </main>

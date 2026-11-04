@@ -1,3 +1,4 @@
+﻿import { Icon } from './Icon'
 import { useId, type ReactNode } from 'react'
 import { useModal } from '@/shared/hooks/useModal'
 export function Modal({
@@ -27,9 +28,9 @@ export function Modal({
         event.preventDefault()
         if (!busy) onClose()
       }}
-      className="fixed inset-0 m-auto max-h-[90dvh] w-[calc(100%-2rem)] max-w-lg overflow-y-auto rounded-xl border border-slate-200 bg-white p-6 shadow-lg backdrop:bg-slate-950/40"
+      className="modal-shell"
     >
-      <div className="flex items-start justify-between gap-4">
+      <div className="flex items-center justify-between gap-4 border-b border-border pb-4">
         <h2 id={id} className="text-xl font-semibold">
           {title}
         </h2>
@@ -38,17 +39,17 @@ export function Modal({
           aria-label="Cerrar diálogo"
           disabled={busy}
           onClick={onClose}
-          className="px-2 py-1"
+          className="icon-button"
         >
-          ✕
+          <Icon name="close" />
         </button>
       </div>
       {description && (
-        <p id={`${id}-description`} className="mt-3 text-slate-600">
+        <p id={`${id}-description`} className="mt-4 text-sm leading-6 text-muted">
           {description}
         </p>
       )}
-      <div className="mt-4">{open ? children : null}</div>
+      <div className="mt-5">{open ? children : null}</div>
     </dialog>
   )
 }

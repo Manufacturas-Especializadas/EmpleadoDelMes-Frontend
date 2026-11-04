@@ -1,3 +1,4 @@
+﻿import { SuccessMessage } from '@/shared/components/SuccessMessage'
 import { useState } from 'react'
 import { nominationsApi } from '../nominationsApi'
 import type { Candidate, NominationConfirmation } from '../types'
@@ -50,7 +51,9 @@ export function NominationsPage() {
     return (
       <div className="space-y-4">
         <PageHeader title="Postulación registrada" />
-        <p role="status">Registraste a {success.candidate.fullName} en la convocatoria.</p>
+        <SuccessMessage>
+          Registraste a {success.candidate.fullName} en la convocatoria.
+        </SuccessMessage>
         <p>{qualityLabels(success.qualities)}</p>
         <p className="whitespace-pre-wrap">{success.justification}</p>
         <button
@@ -78,15 +81,20 @@ export function NominationsPage() {
             : 'Consulta de convocatoria abierta'
         }
       />
-      <button type="button" onClick={active.reload} disabled={active.loading || operation.busy}>
+      <button
+        className="secondary"
+        type="button"
+        onClick={active.reload}
+        disabled={active.loading || operation.busy}
+      >
         Actualizar convocatoria
       </button>
-      {active.loading && <LoadingState />}
+      {active.loading && <LoadingState variant="header" />}
       {active.error && <ErrorState message={active.error} onRetry={active.reload} />}
       {active.data && (
         <>
           <ListFilters requiredTerm onSearch={(term) => setSearch({ term, page: 1 })} />
-          {candidates.loading && <LoadingState />}
+          {candidates.loading && <LoadingState variant="table" />}
           {candidates.error && (
             <ErrorState message={candidates.error} onRetry={candidates.reload} />
           )}
@@ -130,7 +138,7 @@ export function NominationsPage() {
       )}
       {candidate && (
         <form
-          className="space-y-4 rounded-xl border border-slate-200 bg-white p-5"
+          className="surface-panel space-y-5 p-5 sm:p-7"
           onSubmit={(event) => {
             event.preventDefault()
             operation.clearError()
@@ -143,7 +151,7 @@ export function NominationsPage() {
           <fieldset disabled={operation.busy}>
             <legend>Cualidades</legend>
             {qualities.map((item) => (
-              <label key={item.value} className="my-2 flex items-center gap-2">
+              <label key={item.value} className="choice-row my-2">
                 <input
                   className="m-0 inline-block w-auto"
                   type="checkbox"
@@ -189,3 +197,4 @@ export function NominationsPage() {
     </div>
   )
 }
+
