@@ -1,4 +1,4 @@
-import type { Campaign } from '@/features/campaigns'
+﻿import type { Campaign } from '@/features/campaigns'
 import type { Candidate, NominationConfirmation } from '@/features/nominations'
 import type { Preselection, NominationCandidate } from '@/features/preselections'
 import type { Opinion, OpinionCandidate } from '@/features/opinions'
@@ -140,7 +140,17 @@ function handle(
       fail(401, 'El patrocinador de demostración está desactivado.')
     const accessToken = crypto.randomUUID()
     sessions.set(accessToken, role)
-    return response({ accessToken, refreshToken: 'demo-memory-only', expiresIn: 900 })
+    return response({ accessToken, refreshToken: accessToken, expiresIn: 900 })
+  }
+  if (path === '/api/auth/refresh' && method === 'POST') {
+    const previous = text(body, 'refreshToken')
+    const refreshRole = sessions.get(previous)
+    if (!refreshRole || (refreshRole === 'Sponsor' && !administration.sponsorActive()))
+      fail(401, 'La sesión de demostración venció.')
+    const accessToken = crypto.randomUUID()
+    sessions.set(accessToken, refreshRole)
+    sessions.delete(previous)
+    return response({ accessToken, refreshToken: accessToken, expiresIn: 900 })
   }
   const role = sessions.get(token)
   if (!role) fail(401, 'Inicia sesión en la demostración.')
@@ -299,6 +309,7 @@ function handle(
   }
   if (path.startsWith('/api/opinions/')) {
     requireRole(['HumanResources', 'Safety', 'Quality'])
+    if (path === '/api/opinions/campaigns') return response(page([campaign], url))
     if (path === '/api/opinions/candidates') {
       checkCampaign(url.searchParams.get('campaignId'))
       const items: OpinionCandidate[] = employees

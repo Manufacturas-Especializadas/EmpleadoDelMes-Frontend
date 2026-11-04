@@ -21,3 +21,9 @@ export interface OpinionStatus {
   message: string | null
 }
 export type OpinionPage = PaginatedResponse<OpinionCandidate>
+export interface OpinionCampaign {
+  id: string
+  evaluationMonth: string
+  canAcceptOpinions: boolean
+  isArchived: boolean
+}

@@ -1,4 +1,4 @@
-import { useState } from 'react'
+﻿import { useState } from 'react'
 import type { OpinionCandidate, OpinionStatus } from '../types'
 import { opinionsApi } from '../opinionsApi'
 import { ApiError } from '@/shared/api/httpClient'
@@ -10,10 +10,12 @@ import { ErrorState } from '@/shared/components/ErrorState'
 import { formatDate } from '@/shared/utils/formatDate'
 function OpinionForm({
   candidate,
+  readOnly = false,
   initial,
   onSaved,
   onClose,
 }: {
+  readOnly?: boolean
   candidate: OpinionCandidate
   initial: OpinionStatus
   onSaved: () => void
@@ -24,6 +26,7 @@ function OpinionForm({
   const [blocked, setBlocked] = useState(false)
   const operation = useOperation()
   async function save(signal: AbortSignal) {
+    if (readOnly) return
     try {
       const opinion = await opinionsApi.save(
         candidate.campaignId,
@@ -68,51 +71,57 @@ function OpinionForm({
         El servidor permite guardar únicamente durante el periodo abierto y mientras el candidato
         siga preseleccionado.
       </p>
-      <form
-        className="space-y-3"
-        onSubmit={(event) => {
-          event.preventDefault()
-          void operation.run(save)
-        }}
-      >
-        <label htmlFor="opinion-content">Opinión de tu departamento ({content.length}/500)</label>
-        <textarea
-          id="opinion-content"
-          className="w-full rounded-lg border p-3"
-          value={content}
-          onChange={(event) => setContent(event.target.value)}
-          maxLength={500}
-          required
-          disabled={operation.busy}
-        />
-        {operation.error && (
-          <p role="alert" className="text-red-700">
-            {operation.error}
-          </p>
-        )}
-        {blocked && (
-          <div role="status">
-            <p>
-              Se conservó tu texto. Revisa la versión registrada y confirma con administración que
-              el periodo esté abierto.
+      {readOnly ? (
+        <p role="status">Periodo cerrado. La opinión está disponible únicamente para consulta.</p>
+      ) : (
+        <form
+          className="space-y-3"
+          onSubmit={(event) => {
+            event.preventDefault()
+            void operation.run(save)
+          }}
+        >
+          <label htmlFor="opinion-content">Opinión de tu departamento ({content.length}/500)</label>
+          <textarea
+            id="opinion-content"
+            className="w-full rounded-lg border p-3"
+            value={content}
+            onChange={(event) => setContent(event.target.value)}
+            maxLength={500}
+            required
+            disabled={operation.busy}
+          />
+          {operation.error && (
+            <p role="alert" className="text-red-700">
+              {operation.error}
             </p>
-            <button type="button" className="my-3 underline" onClick={() => setBlocked(false)}>
-              Ya revisé los datos; habilitar un nuevo intento manual
-            </button>
-          </div>
-        )}
-        <button className="primary" disabled={operation.busy || blocked || !content.trim()}>
-          {status.hasOpinion ? 'Guardar cambios' : 'Guardar opinión'}
-        </button>
-      </form>
+          )}
+          {blocked && (
+            <div role="status">
+              <p>
+                Se conservó tu texto. Revisa la versión registrada y confirma con administración que
+                el periodo esté abierto.
+              </p>
+              <button type="button" className="my-3 underline" onClick={() => setBlocked(false)}>
+                Ya revisé los datos; habilitar un nuevo intento manual
+              </button>
+            </div>
+          )}
+          <button className="primary" disabled={operation.busy || blocked || !content.trim()}>
+            {status.hasOpinion ? 'Guardar cambios' : 'Guardar opinión'}
+          </button>
+        </form>
+      )}
     </Modal>
   )
 }
 export function OpinionEditor({
   candidate,
+  readOnly = false,
   onSaved,
   onClose,
 }: {
+  readOnly?: boolean
   candidate: OpinionCandidate
   onSaved: () => void
   onClose: () => void
@@ -122,7 +131,13 @@ export function OpinionEditor({
   )
   if (query.data)
     return (
-      <OpinionForm candidate={candidate} initial={query.data} onSaved={onSaved} onClose={onClose} />
+      <OpinionForm
+        readOnly={readOnly}
+        candidate={candidate}
+        initial={query.data}
+        onSaved={onSaved}
+        onClose={onClose}
+      />
     )
   return (
     <Modal open title="Consultar opinión" onClose={onClose}>
