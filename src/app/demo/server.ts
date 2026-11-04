@@ -309,6 +309,7 @@ function handle(
   }
   if (path.startsWith('/api/opinions/')) {
     requireRole(['HumanResources', 'Safety', 'Quality'])
+    if (path === '/api/opinions/campaigns') return response(page([campaign], url))
     if (path === '/api/opinions/candidates') {
       checkCampaign(url.searchParams.get('campaignId'))
       const items: OpinionCandidate[] = employees

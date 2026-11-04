@@ -1,5 +1,5 @@
 ﻿import { useState } from 'react'
-const defaultLogo = `${import.meta.env.BASE_URL}branding/mesa-logo.png`
+const defaultLogo = `${import.meta.env.BASE_URL}branding/logomesa-1.png`
 export function BrandLogo({ src = defaultLogo }: { src?: string }) {
   const [failed, setFailed] = useState<string | null>(null)
   return (
