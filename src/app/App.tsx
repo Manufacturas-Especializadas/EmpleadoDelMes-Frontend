@@ -7,6 +7,10 @@ import { NominationsPage } from '@/features/nominations'
 import { PreselectionsPage } from '@/features/preselections'
 import { OpinionsPage } from '@/features/opinions'
 import { ReviewPage } from '@/features/review'
+import { EmployeesPage } from '@/features/employees'
+import { UsersPage } from '@/features/users'
+import { EmployeeImportPage, SponsorImportPage } from '@/features/imports'
+import { AdminNominationsPage } from '@/features/adminNominations'
 
 function Guard({ role }: { role?: string }) {
   const user = useAuth()
@@ -59,6 +63,11 @@ export default function App() {
             <Route path="/admin/campaigns/:id" element={<CampaignDetailPage />} />
             <Route path="/admin/preselections" element={<PreselectionsPage />} />
             <Route path="/admin/review" element={<ReviewPage />} />
+            <Route path="/admin/employees" element={<EmployeesPage />} />
+            <Route path="/admin/users" element={<UsersPage />} />
+            <Route path="/admin/imports/employees" element={<EmployeeImportPage />} />
+            <Route path="/admin/imports/sponsors" element={<SponsorImportPage />} />
+            <Route path="/admin/nominations" element={<AdminNominationsPage />} />
           </Route>
         </Route>
       </Route>

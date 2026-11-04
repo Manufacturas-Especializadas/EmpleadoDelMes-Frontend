@@ -4,6 +4,8 @@ import type { Preselection, NominationCandidate } from '@/features/preselections
 import type { Opinion, OpinionCandidate } from '@/features/opinions'
 import type { ReviewCandidate, ReviewDetail } from '@/features/review'
 import type { PaginatedResponse } from '@/shared/api/types'
+import type { Employee } from '@/features/employees'
+import { createAdministration } from './administration'
 
 const campaignId = '10000000-0000-4000-8000-000000000001'
 const now = () => new Date().toISOString()
@@ -20,7 +22,7 @@ const campaign: Campaign = {
   canAcceptNominations: true,
   canAcceptOpinions: true,
 }
-const employees: Candidate[] = [
+const employees: Employee[] = [
   {
     id: '20000000-0000-4000-8000-000000000001',
     payrollNumber: 'DEMO001',
@@ -32,13 +34,22 @@ const employees: Candidate[] = [
     fullName: 'María Demostración',
   },
   { id: '20000000-0000-4000-8000-000000000003', payrollNumber: 'DEMO003', fullName: 'Luis Prueba' },
-]
+].map((item) => ({ ...item, version: version() }))
 const sponsor: Candidate = {
   id: '20000000-0000-4000-8000-000000000099',
   payrollNumber: 'DEMO099',
   fullName: 'Patrocinador de ejemplo',
 }
 const nominations: NominationConfirmation[] = []
+employees.push({ ...sponsor, version: version() })
+const administration = createAdministration({
+  employees,
+  nominations,
+  campaign,
+  version,
+  fail,
+  page,
+})
 const selections = new Map<string, Preselection>()
 const opinions = new Map<string, Opinion>()
 const roles = ['Administrator', 'Sponsor', 'HumanResources', 'Safety', 'Quality']
@@ -114,17 +125,27 @@ function response(data: unknown, status = 200) {
     headers: { 'Content-Type': 'application/json' },
   })
 }
-function handle(url: URL, method: string, body: Record<string, unknown>, token: string) {
+function handle(
+  url: URL,
+  method: string,
+  body: Record<string, unknown>,
+  token: string,
+  form?: FormData,
+) {
   const path = url.pathname
   if (path === '/api/auth/login' && method === 'POST') {
     const role = text(body, 'userName')
     if (!roles.includes(role)) fail(401, 'Selecciona uno de los perfiles de demostración.')
+    if (role === 'Sponsor' && !administration.sponsorActive())
+      fail(401, 'El patrocinador de demostración está desactivado.')
     const accessToken = crypto.randomUUID()
     sessions.set(accessToken, role)
     return response({ accessToken, refreshToken: 'demo-memory-only', expiresIn: 900 })
   }
   const role = sessions.get(token)
   if (!role) fail(401, 'Inicia sesión en la demostración.')
+  if (role === 'Sponsor' && !administration.sponsorActive())
+    fail(401, 'La cuenta está desactivada.')
   const userId = '30000000-0000-4000-8000-' + String(roles.indexOf(role) + 1).padStart(12, '0')
   const requireRole = (allowed: string[]) => {
     if (!allowed.includes(role)) fail(403, 'No tienes permiso para realizar esta operación.')
@@ -140,6 +161,8 @@ function handle(url: URL, method: string, body: Record<string, unknown>, token: 
   if (path === '/api/auth/change-password')
     return response({ message: 'Contraseña de demostración actualizada.' })
   updatePeriods()
+  const administrativeResponse = administration.handle(url, method, body, role, form)
+  if (administrativeResponse) return administrativeResponse
   const term = (url.searchParams.get('term') ?? '').trim().toLocaleLowerCase()
   if (term.length > 100) fail(400, 'La búsqueda no puede superar 100 caracteres.')
   const matches = (name: string, payroll: string) =>
@@ -214,6 +237,7 @@ function handle(url: URL, method: string, body: Record<string, unknown>, token: 
     if (path === '/api/nominations' && method === 'POST') {
       if (!campaign.canAcceptNominations) fail(409, 'La convocatoria ya no acepta postulaciones.')
       const candidate = findEmployee(text(body, 'candidateEmployeeId'))
+      if (candidate.id === sponsor.id) fail(400, 'No puedes postularte a ti mismo.')
       if (nominations.some((item) => item.candidate.id === candidate.id))
         fail(409, 'Ya postulaste a este empleado en esta convocatoria.')
       const flags = body.qualities
@@ -223,8 +247,8 @@ function handle(url: URL, method: string, body: Record<string, unknown>, token: 
         id: crypto.randomUUID(),
         campaignId,
         createdByUserId: userId,
-        sponsor,
-        candidate,
+        sponsor: { ...sponsor },
+        candidate: { ...candidate },
         qualities: flags,
         justification: content(body, 'justification'),
         registeredAtUtc: now(),
@@ -396,6 +420,7 @@ export const demoFetch: typeof fetch = async (input, init) => {
       init?.method ?? 'GET',
       body,
       (headers.get('Authorization') ?? '').replace(/^Bearer /, ''),
+      init?.body instanceof FormData ? init.body : undefined,
     )
   } catch (error) {
     if (error instanceof DemoFailure) return response({ message: error.message }, error.status)

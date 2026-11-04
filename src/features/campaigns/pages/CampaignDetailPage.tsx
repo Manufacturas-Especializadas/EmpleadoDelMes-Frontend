@@ -136,6 +136,7 @@ export function CampaignDetailPage() {
             ))}
           </div>
           <nav className="flex flex-wrap gap-4">
+            <Link to={`/admin/nominations?campaignId=${id}`}>Administrar postulaciones</Link>
             <Link to={`/admin/preselections?campaignId=${id}`}>Preselección</Link>
             <Link to={`/admin/review?campaignId=${id}`}>Revisión integral</Link>
           </nav>

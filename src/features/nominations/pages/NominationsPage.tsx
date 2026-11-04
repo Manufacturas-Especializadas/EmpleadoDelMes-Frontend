@@ -103,7 +103,17 @@ export function NominationsPage() {
                     id: 'select',
                     header: 'Seleccionar',
                     cell: (row) => (
-                      <button disabled={operation.busy} onClick={() => setCandidate(row)}>
+                      <button
+                        disabled={operation.busy}
+                        onClick={() => {
+                          if (candidate?.id !== row.id) {
+                            setCandidate(row)
+                            setFlags(0)
+                            setJustification('')
+                            operation.clearError()
+                          }
+                        }}
+                      >
                         {candidate?.id === row.id ? 'Seleccionado' : 'Seleccionar'}
                       </button>
                     ),

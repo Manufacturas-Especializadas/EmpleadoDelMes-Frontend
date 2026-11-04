@@ -11,7 +11,10 @@ export function AppLayout() {
           {import.meta.env.DEV &&
             (import.meta.env.VITE_DEMO === 'true' ||
               import.meta.env.VITE_DEMO_CAMPAIGNS === 'true') && (
-              <p className="text-sm text-amber-800">Demostración · datos ficticios en memoria</p>
+              <p className="text-sm text-amber-800">
+                Demostración · datos ficticios en memoria. Las importaciones muestran filas
+                simuladas; no analizan el Excel.
+              </p>
             )}
         </div>
         <div>
@@ -62,6 +65,21 @@ export function AppLayout() {
                 </NavLink>
                 <NavLink to="/admin/review" className="px-4 py-3">
                   Revisión integral
+                </NavLink>
+                <NavLink to="/admin/employees" className="px-4 py-3">
+                  Empleados
+                </NavLink>
+                <NavLink to="/admin/users" className="px-4 py-3">
+                  Usuarios
+                </NavLink>
+                <NavLink to="/admin/imports/employees" className="px-4 py-3">
+                  Importación de empleados
+                </NavLink>
+                <NavLink to="/admin/imports/sponsors" className="px-4 py-3">
+                  Importación de patrocinadores
+                </NavLink>
+                <NavLink to="/admin/nominations" className="px-4 py-3">
+                  Administración de postulaciones
                 </NavLink>
               </>
             )}
