@@ -1,56 +1,101 @@
-﻿import { appConfig } from '@/shared/config/env'
-export class ApiError extends Error {
-  status: number
-  details?: unknown
-  constructor(status: number, message: string, details?: unknown) {
-    super(message)
-    this.status = status
-    this.details = details
-  }
+import { appConfig } from '@/shared/config/env'
+import { ApiError } from './ApiError'
+export { ApiError } from './ApiError'
+
+type SessionAdapter = { getToken: () => string | null; onUnauthorized: (token: string) => void }
+let session: SessionAdapter | undefined
+let transport: typeof fetch = (...args) => fetch(...args)
+export function configureDevelopmentTransport(next: typeof fetch) {
+  if (import.meta.env.DEV) transport = next
 }
+/** La aplicación conecta la sesión; shared no conoce módulos de negocio. */
+export function configureHttpSession(adapter: SessionAdapter) {
+  session = adapter
+}
+
 type Options = {
   method?: 'GET' | 'POST' | 'PUT' | 'PATCH'
   body?: unknown
   token?: string
+  authenticated?: boolean
   signal?: AbortSignal
+}
+const messages: Record<number, string> = {
+  400: 'Revisa los datos ingresados.',
+  401: 'Tu sesión ha vencido o las credenciales son incorrectas.',
+  403: 'No tienes permiso para realizar esta operación.',
+  404: 'No se encontró el recurso solicitado.',
+  409: 'Los datos cambiaron o ya existe un registro equivalente. Revisa la información antes de volver a guardar.',
+  429: 'Hay demasiadas solicitudes. Inténtalo más tarde.',
+}
+function record(value: unknown): value is Record<string, unknown> {
+  return typeof value === 'object' && value !== null && !Array.isArray(value)
 }
 export async function request<T>(
   path: `/${string}`,
   options: Options = {},
 ): Promise<{ data: T; headers: Headers }> {
+  options.signal?.throwIfAborted()
+  const token = options.token ?? (options.authenticated ? session?.getToken() : undefined)
+  if (options.authenticated && !token)
+    throw new ApiError(401, 'Debes iniciar sesión para continuar.')
   if (!appConfig.apiBaseUrl)
     throw new ApiError(0, 'No se ha configurado la conexión con el servidor.')
+  const multipart = options.body instanceof FormData
   let response: Response
+  let body: unknown
   try {
-    response = await fetch(`${appConfig.apiBaseUrl}${path}`, {
+    response = await transport(`${appConfig.apiBaseUrl}${path}`, {
       method: options.method ?? 'GET',
       signal: options.signal,
       cache: 'no-store',
       headers: {
         Accept: 'application/json',
-        ...(options.body !== undefined ? { 'Content-Type': 'application/json' } : {}),
-        ...(options.token ? { Authorization: `Bearer ${options.token}` } : {}),
+        ...(options.body !== undefined && !multipart ? { 'Content-Type': 'application/json' } : {}),
+        ...(token ? { Authorization: `Bearer ${token}` } : {}),
       },
-      body: options.body === undefined ? undefined : JSON.stringify(options.body),
+      body:
+        options.body === undefined
+          ? undefined
+          : multipart
+            ? (options.body as FormData)
+            : JSON.stringify(options.body),
     })
+    // Invalidar incluso si el cuerpo del 401 está vacío o mal formado.
+    if (response.status === 401 && token) session?.onUnauthorized(token)
+    const text = await response.text()
+    try {
+      body = text ? JSON.parse(text) : undefined
+    } catch {
+      if (response.ok)
+        throw new ApiError(response.status, 'El servidor devolvió una respuesta no válida.')
+      body = text
+    }
   } catch (error) {
-    if (options.signal?.aborted) throw error
+    if (options.signal?.aborted || error instanceof ApiError) throw error
     throw new ApiError(0, 'No fue posible conectar con el servidor. Inténtalo nuevamente.')
   }
-  const body: unknown = await response.json().catch(() => null)
   if (!response.ok) {
-    const detail = body as { message?: string; errors?: Record<string, string[]> } | null
+    const details = record(body) ? body : {}
+    const fieldErrors: Record<string, string[]> = {}
+    if (record(details.errors)) {
+      for (const [key, value] of Object.entries(details.errors)) {
+        if (Array.isArray(value) && value.every((item) => typeof item === 'string'))
+          fieldErrors[key] = value
+      }
+    }
+    const message = [
+      details.message,
+      details.detail,
+      Object.values(fieldErrors).flat().join(' '),
+    ].find((value) => typeof value === 'string' && value.trim())
     throw new ApiError(
       response.status,
-      detail?.message ??
-        (detail?.errors
-          ? Object.values(detail.errors).flat().join(' ')
-          : response.status === 401
-            ? 'Tu sesión ha vencido o las credenciales son incorrectas.'
-            : response.status === 403
-              ? 'No tienes permiso para realizar esta operación.'
-              : 'No pudimos completar la operación.'),
+      typeof message === 'string'
+        ? message
+        : (messages[response.status] ?? 'No pudimos completar la operación. Inténtalo nuevamente.'),
       body,
+      fieldErrors,
     )
   }
   return { data: body as T, headers: response.headers }

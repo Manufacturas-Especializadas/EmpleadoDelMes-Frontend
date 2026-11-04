@@ -1,6 +1,6 @@
 ﻿import { useSyncExternalStore } from 'react'
-import { ApiError } from '@/shared/api/httpClient'
-import { authApi, type Tokens, type User } from './authApi'
+import { authApi } from './authApi'
+import type { Tokens, User } from './types'
 let user: User | null = null
 let tokens: Tokens | null = null
 let generation = 0
@@ -30,13 +30,8 @@ export async function login(userName: string, password: string) {
 }
 export async function changePassword(current: string, next: string) {
   if (!tokens) throw new Error('Inicia sesión nuevamente.')
-  try {
-    await authApi.changePassword(tokens.accessToken, current, next)
-    logout()
-  } catch (error) {
-    if (error instanceof ApiError && error.status === 401) logout()
-    throw error
-  }
+  await authApi.changePassword(tokens.accessToken, current, next)
+  logout()
 }
 export function useAuth() {
   return useSyncExternalStore(

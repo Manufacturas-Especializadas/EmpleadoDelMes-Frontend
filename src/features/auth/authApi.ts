@@ -1,12 +1,5 @@
 ﻿import { request } from '@/shared/api/httpClient'
-export type Tokens = { accessToken: string; refreshToken: string; expiresIn: number }
-export type User = {
-  userId: string
-  userName: string
-  displayName: string | null
-  roles: string[]
-  mustChangePassword: boolean
-}
+import type { Tokens, User } from './types'
 export const authApi = {
   login: (userName: string, password: string) =>
     request<Tokens>('/api/auth/login', { method: 'POST', body: { userName, password } }),

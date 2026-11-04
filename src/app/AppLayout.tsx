@@ -1,5 +1,5 @@
 ﻿import { NavLink, Outlet } from 'react-router'
-import { logout, roles, useAuth } from '@/features/auth/session'
+import { logout, roles, useAuth } from '@/features/auth'
 export function AppLayout() {
   const user = useAuth()!
   return (
@@ -8,6 +8,11 @@ export function AppLayout() {
         <div>
           <p className="eyebrow">Manufacturas Especializadas</p>
           <p className="text-xl font-bold">EmpleadoDelMes</p>
+          {import.meta.env.DEV &&
+            (import.meta.env.VITE_DEMO === 'true' ||
+              import.meta.env.VITE_DEMO_CAMPAIGNS === 'true') && (
+              <p className="text-sm text-amber-800">Demostración · datos ficticios en memoria</p>
+            )}
         </div>
         <div>
           <p className="font-semibold">{user.displayName || user.userName}</p>
@@ -50,12 +55,22 @@ export function AppLayout() {
               </NavLink>
             )}
 
+            {user.roles.includes('Administrator') && (
+              <>
+                <NavLink to="/admin/preselections" className="px-4 py-3">
+                  Preselección
+                </NavLink>
+                <NavLink to="/admin/review" className="px-4 py-3">
+                  Revisión integral
+                </NavLink>
+              </>
+            )}
             <NavLink to="/change-password" className="px-4 py-3">
               Cambiar contraseña
             </NavLink>
           </nav>
         </aside>
-        <main className="p-6">
+        <main className="min-w-0 p-6">
           <Outlet />
         </main>
       </div>

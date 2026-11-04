@@ -1,9 +1,12 @@
 ﻿import { Link, Navigate, Outlet, Route, Routes } from 'react-router'
-import { home, roles, useAuth } from '@/features/auth/session'
-import { AuthPage } from '@/pages/AuthPage'
-import { HomePage } from '@/pages/HomePage'
-import { AppLayout } from '@/shared/components/AppLayout'
-import { CampaignsPage } from '@/pages/CampaignsPage'
+import { home, roles, useAuth, AuthPage } from '@/features/auth'
+import { HomePage } from './pages/HomePage'
+import { AppLayout } from './AppLayout'
+import { CampaignsPage, CampaignDetailPage } from '@/features/campaigns'
+import { NominationsPage } from '@/features/nominations'
+import { PreselectionsPage } from '@/features/preselections'
+import { OpinionsPage } from '@/features/opinions'
+import { ReviewPage } from '@/features/review'
 
 function Guard({ role }: { role?: string }) {
   const user = useAuth()
@@ -36,12 +39,26 @@ export default function App() {
         <Route element={<AppLayout />}>
           {roles.map((role) => (
             <Route key={role.name} element={<Guard role={role.name} />}>
-              <Route path={role.path} element={<HomePage role={role.label} />} />
+              <Route
+                path={role.path}
+                element={
+                  role.name === 'Sponsor' ? (
+                    <NominationsPage />
+                  ) : ['HumanResources', 'Safety', 'Quality'].includes(role.name) ? (
+                    <OpinionsPage />
+                  ) : (
+                    <HomePage role={role.label} />
+                  )
+                }
+              />
             </Route>
           ))}
 
           <Route element={<Guard role="Administrator" />}>
             <Route path="/admin/campaigns" element={<CampaignsPage />} />
+            <Route path="/admin/campaigns/:id" element={<CampaignDetailPage />} />
+            <Route path="/admin/preselections" element={<PreselectionsPage />} />
+            <Route path="/admin/review" element={<ReviewPage />} />
           </Route>
         </Route>
       </Route>

@@ -1,53 +1,35 @@
-import { getAccessToken } from '@/features/auth/session'
 import { request } from '@/shared/api/httpClient'
-
-export type CampaignPeriodMode = 0 | 1 | 2
-
-export interface CampaignPeriod {
-  mode: CampaignPeriodMode
-  scheduledOpeningAtUtc: string | null
-  scheduledClosingAtUtc: string | null
-}
-
-export interface Campaign {
-  id: string
-  evaluationMonth: string
-  createdAtUtc: string
-  isArchived: boolean
-  nominationPeriod: CampaignPeriod
-  opinionPeriod: CampaignPeriod
-  version: string
-  canAcceptNominations: boolean
-  canAcceptOpinions: boolean
-}
-
-export interface CampaignPage {
-  items: Campaign[]
-  total: number
-  pageNumber: number
-  pageSize: number
-}
+import type { Campaign, CampaignPage } from './types'
 
 export async function getCampaigns(
   pageNumber = 1,
   pageSize = 20,
   signal?: AbortSignal,
 ): Promise<CampaignPage> {
-  const token = getAccessToken()
+  const params = new URLSearchParams({ pageNumber: String(pageNumber), pageSize: String(pageSize) })
+  return (await request<CampaignPage>(`/api/campaigns?${params}`, { authenticated: true, signal }))
+    .data
+}
 
-  if (!token) {
-    throw new Error('Debes iniciar sesión para consultar las convocatorias.')
-  }
-
-  const params = new URLSearchParams({
-    pageNumber: String(pageNumber),
-    pageSize: String(pageSize),
-  })
-
-  const response = await request<CampaignPage>(`/api/campaigns?${params.toString()}`, {
-    token,
-    signal,
-  })
-
-  return response.data
+export type CampaignAction =
+  | `${'nominations' | 'opinions'}/${'open' | 'close' | 'automatic' | 'schedule'}`
+  | 'archive'
+  | 'reopen'
+export async function getCampaign(id: string, signal: AbortSignal) {
+  return (await request<Campaign>(`/api/campaigns/${id}`, { authenticated: true, signal })).data
+}
+export async function changeCampaign(
+  id: string,
+  action: CampaignAction,
+  body: { version: string; openingAt?: string; closingAt?: string },
+  signal: AbortSignal,
+) {
+  return (
+    await request<Campaign>(`/api/campaigns/${id}/${action}`, {
+      method: action.endsWith('/schedule') ? 'PUT' : 'POST',
+      body,
+      authenticated: true,
+      signal,
+    })
+  ).data
 }

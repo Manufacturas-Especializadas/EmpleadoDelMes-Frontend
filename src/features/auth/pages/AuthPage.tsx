@@ -1,6 +1,7 @@
-﻿import { useState, type FormEvent } from 'react'
+import { TextField } from '@/shared/components/TextField'
+import { useState, type FormEvent } from 'react'
 import { Navigate, useNavigate } from 'react-router'
-import { changePassword, home, login, logout, useAuth } from '@/features/auth/session'
+import { changePassword, home, login, logout, useAuth } from '../session'
 export function AuthPage({ change = false }: { change?: boolean }) {
   const user = useAuth()
   const navigate = useNavigate()
@@ -51,46 +52,76 @@ export function AuthPage({ change = false }: { change?: boolean }) {
           </p>
         )}
         <form onSubmit={submit} className="space-y-4" aria-busy={busy}>
+          {import.meta.env.DEV &&
+            (import.meta.env.VITE_DEMO === 'true' ||
+              import.meta.env.VITE_DEMO_CAMPAIGNS === 'true') &&
+            !change && (
+              <div className="rounded border border-amber-300 p-3">
+                <p>Demostración local: elige un perfil sin credenciales.</p>
+                {['Administrator', 'Sponsor', 'HumanResources', 'Safety', 'Quality'].map((role) => (
+                  <button
+                    key={role}
+                    type="button"
+                    disabled={busy}
+                    className="m-1 border px-2 py-1"
+                    onClick={async () => {
+                      setBusy(true)
+                      setError('')
+                      try {
+                        await login(role, 'demo')
+                      } catch (error) {
+                        setError(
+                          error instanceof Error
+                            ? error.message
+                            : 'No se pudo abrir la demostración.',
+                        )
+                      } finally {
+                        setBusy(false)
+                      }
+                    }}
+                  >
+                    {role}
+                  </button>
+                ))}
+              </div>
+            )}
           {!change && (
-            <label>
-              Usuario
-              <input name="userName" autoComplete="username" required disabled={busy} />
-            </label>
-          )}
-          <label>
-            {change ? 'Contraseña actual' : 'Contraseña'}
-            <input
-              name="password"
-              type={visible ? 'text' : 'password'}
-              autoComplete="current-password"
+            <TextField
+              label="Usuario"
+              name="userName"
+              autoComplete="username"
               required
               disabled={busy}
             />
-          </label>
+          )}
+          <TextField
+            label={change ? 'Contraseña actual' : 'Contraseña'}
+            name="password"
+            type={visible ? 'text' : 'password'}
+            autoComplete="current-password"
+            required
+            disabled={busy}
+          />
           {change && (
             <>
-              <label>
-                Nueva contraseña
-                <input
-                  name="next"
-                  type={visible ? 'text' : 'password'}
-                  autoComplete="new-password"
-                  minLength={12}
-                  required
-                  disabled={busy}
-                />
-              </label>
-              <label>
-                Confirmación
-                <input
-                  name="confirm"
-                  type={visible ? 'text' : 'password'}
-                  autoComplete="new-password"
-                  minLength={12}
-                  required
-                  disabled={busy}
-                />
-              </label>
+              <TextField
+                label="Nueva contraseña"
+                name="next"
+                type={visible ? 'text' : 'password'}
+                autoComplete="new-password"
+                minLength={12}
+                required
+                disabled={busy}
+              />
+              <TextField
+                label="Confirmación"
+                name="confirm"
+                type={visible ? 'text' : 'password'}
+                autoComplete="new-password"
+                minLength={12}
+                required
+                disabled={busy}
+              />
               <p className="text-sm text-slate-500">Mínimo 12 caracteres.</p>
             </>
           )}

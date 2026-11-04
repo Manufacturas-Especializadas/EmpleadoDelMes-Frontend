@@ -59,7 +59,7 @@ npm run test
 ## Arquitectura
 
 - src/app: configuración global.
-- src/pages: páginas.
+- src/app/pages: páginas generales; las páginas de negocio viven en su funcionalidad.
 - src/features: funcionalidades.
 - src/shared: código reutilizable.
 - src/assets: recursos estáticos.
@@ -84,6 +84,25 @@ El servicio tipado incluye login, me, change-password y refresh. La renovación 
 
 Las contraseñas permanecen únicamente en los campos del formulario durante su envío. El cambio exitoso elimina ambos tokens y solicita nuevo ingreso. El cierre de sesión es local, no revoca tokens en el servidor. Los guards verifican cada rol explícitamente, sin privilegio implícito de Administrator para otras áreas. Para usuarios con varios roles se elige el primero en este orden: Administrator, Sponsor, HumanResources, Safety, Quality; la navegación muestra sus áreas autorizadas.
 
-El cliente HTTP central admite GET, POST, PUT, PATCH, JSON, Bearer opcional, AbortSignal y errores estructurados. Las futuras operaciones protegidas deberán enviar el token desde la gestión de sesión y aplicar la misma política de 401. Los guards son controles de experiencia de usuario: la autorización real corresponde al backend.
+El cliente HTTP central admite GET, POST, PUT, PATCH, JSON, FormData, Bearer opcional, AbortSignal y errores estructurados. Las operaciones protegidas usan `authenticated: true`; `src/app/configureApi.ts` conecta el token en memoria y la política central de 401. Los guards son controles de experiencia de usuario: la autorización real corresponde al backend.
+
+## Entrega 1
+
+Consulta [la arquitectura, contratos e inventario de archivos](docs/entrega-1.md).
+
+## Entrega 2
+
+Consulta [los módulos, contratos, límites y pasos de integración](docs/entrega-2.md).
+
+Para recorrer el flujo sin API ni credenciales reales:
+
+```powershell
+npm run dev -- --mode demo
+```
+
+Elige un perfil en el login. Cierra sesión y cambia de perfil en la misma pestaña;
+una recarga reinicia los datos ficticios. La demostración solo existe en desarrollo.
+Para la API real, usa `npm run dev` y asegúrate de que `VITE_DEMO` y
+`VITE_DEMO_CAMPAIGNS` estén desactivadas en tus archivos locales y entorno.
 
 No se agregaron pruebas automatizadas. La integración con usuarios reales y la revisión visual en navegador quedan pendientes; no se modificó el backend ni se conectó SQL Server.
