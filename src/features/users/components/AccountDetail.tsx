@@ -1,4 +1,5 @@
-﻿import { useState } from 'react'
+﻿import { employeesApi } from '@/features/employees/employeesApi'
+import { useState } from 'react'
 import { usersApi } from '../usersApi'
 import { useQuery } from '@/shared/hooks/useQuery'
 import { useOperation } from '@/shared/hooks/useOperation'
@@ -20,6 +21,11 @@ export function AccountDetail({
   const [confirm, setConfirm] = useState(false),
     [message, setMessage] = useState('')
   const account = query.data
+  const employee = useQuery(
+    account?.employeeId ?? '',
+    (signal) => employeesApi.get(account!.employeeId!, signal),
+    !!account?.employeeId,
+  )
   return (
     <>
       <Modal open title="Detalle de cuenta" onClose={onClose} busy={operation.busy}>
@@ -31,7 +37,24 @@ export function AccountDetail({
             <p>Usuario: {account.userName}</p>
             <p>Roles: {account.roles.join(', ')}</p>
             <p>{account.isActive ? 'Activa' : 'Inactiva'}</p>
-            <p>Empleado vinculado: {account.employeeId ?? 'Sin vínculo'}</p>
+            {!account.employeeId ? (
+              <p>
+                Cuenta sin empleado vinculado. Las cuentas departamentales no requieren vinculación.
+              </p>
+            ) : (
+              <>
+                {employee.loading && <LoadingState message="Consultando empleado vinculado…" />}
+                {employee.error && (
+                  <ErrorState message={employee.error} onRetry={employee.reload} />
+                )}
+                {employee.data && (
+                  <>
+                    <p>Empleado: {employee.data.fullName}</p>
+                    <p>Nómina: {employee.data.payrollNumber}</p>
+                  </>
+                )}
+              </>
+            )}
             <p>
               {account.mustChangePassword ? 'Debe cambiar su contraseña' : 'Contraseña actualizada'}
             </p>

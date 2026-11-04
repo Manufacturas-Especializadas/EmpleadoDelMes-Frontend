@@ -1,5 +1,5 @@
-import { useState } from 'react'
-import { useSearchParams } from 'react-router'
+﻿import { useState } from 'react'
+import { CampaignSelector } from '@/shared/components/CampaignSelector'
 import { preselectionsApi } from '../preselectionsApi'
 import type { NominationCandidate } from '../types'
 import { useQuery } from '@/shared/hooks/useQuery'
@@ -14,9 +14,11 @@ import { ConfirmDialog } from '@/shared/components/ConfirmDialog'
 import { LoadingState } from '@/shared/components/LoadingState'
 import { ErrorState } from '@/shared/components/ErrorState'
 export function PreselectionsPage() {
-  const [params] = useSearchParams()
+  return <CampaignSelector>{(id) => <CampaignContent campaignId={id} />}</CampaignSelector>
+}
+function CampaignContent({ campaignId }: { campaignId: string }) {
   const [filter, setFilter] = useState({
-    campaignId: params.get('campaignId') ?? '',
+    campaignId: campaignId,
     term: '',
     page: 1,
   })
@@ -58,16 +60,11 @@ export function PreselectionsPage() {
     <div>
       <PageHeader title="Preselección administrativa" />
       <ListFilters
-        campaign
-        initialCampaign={filter.campaignId}
-        onSearch={(term, campaignId) => {
+        onSearch={(term) => {
           setFilter({ term, campaignId, page: 1 })
           setMessage('')
         }}
       />
-      {!filter.campaignId && (
-        <p>Selecciona una convocatoria desde su detalle o introduce su identificador.</p>
-      )}
       {message && <p role="status">{message}</p>}
       {operation.error && !selected && <p role="alert">{operation.error}</p>}
       {query.loading && <LoadingState />}

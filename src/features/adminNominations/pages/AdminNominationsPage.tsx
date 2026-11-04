@@ -1,10 +1,9 @@
-import { useState } from 'react'
-import { useSearchParams } from 'react-router'
+﻿import { useState } from 'react'
+import { CampaignSelector } from '@/shared/components/CampaignSelector'
 import { adminNominationsApi } from '../adminNominationsApi'
 import { NominationEditor } from '../components/NominationEditor'
 import { useQuery } from '@/shared/hooks/useQuery'
 import { PageHeader } from '@/shared/components/PageHeader'
-import { TextField } from '@/shared/components/TextField'
 import { SearchInput } from '@/shared/components/SearchInput'
 import { DataTable } from '@/shared/components/DataTable'
 import { Pagination } from '@/shared/components/Pagination'
@@ -13,15 +12,16 @@ import { LoadingState } from '@/shared/components/LoadingState'
 import { ErrorState } from '@/shared/components/ErrorState'
 import { formatDate } from '@/shared/utils/formatDate'
 export function AdminNominationsPage() {
-  const [params] = useSearchParams()
+  return <CampaignSelector allowAll>{(id) => <CampaignContent campaignId={id} />}</CampaignSelector>
+}
+function CampaignContent({ campaignId }: { campaignId: string }) {
   const [filter, setFilter] = useState({
-    campaignId: params.get('campaignId') ?? '',
+    campaignId: campaignId,
     term: '',
     status: '',
     page: 1,
   })
-  const [campaignId, setCampaignId] = useState(filter.campaignId),
-    [term, setTerm] = useState(''),
+  const [term, setTerm] = useState(''),
     [status, setStatus] = useState(''),
     [id, setId] = useState<string | null>(null)
   const query = useQuery(JSON.stringify(filter), (signal) =>
@@ -37,12 +37,6 @@ export function AdminNominationsPage() {
           setFilter({ campaignId: campaignId.trim(), term: term.trim(), status, page: 1 })
         }}
       >
-        <TextField
-          label="Convocatoria (opcional)"
-          value={campaignId}
-          onChange={(event) => setCampaignId(event.target.value)}
-          pattern="[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}"
-        />
         <SearchInput label="Nombre o nómina" value={term} onValueChange={setTerm} maxLength={100} />
         <label>
           Estado
