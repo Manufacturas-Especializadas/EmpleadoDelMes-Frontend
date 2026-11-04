@@ -1,5 +1,6 @@
 ﻿import { Link, Navigate, Outlet, Route, Routes } from 'react-router'
-import { home, roles, useAuth, AuthPage } from '@/features/auth'
+import { home, roles, useAuth } from '@/features/auth/session'
+import { AuthPage } from '@/features/auth'
 import { HomePage } from './pages/HomePage'
 import { AppLayout } from './AppLayout'
 import { CampaignsPage, CampaignDetailPage } from '@/features/campaigns'

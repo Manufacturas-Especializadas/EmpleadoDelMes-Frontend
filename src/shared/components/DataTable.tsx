@@ -1,4 +1,4 @@
-import type { Key, ReactNode } from 'react'
+﻿import type { Key, ReactNode } from 'react'
 import { EmptyState } from './EmptyState'
 export interface Column<T> {
   id: string
@@ -20,8 +20,8 @@ export function DataTable<T>({
 }) {
   if (!rows.length) return emptyState ?? <EmptyState />
   return (
-    <div className="overflow-x-auto" role="region" aria-label={caption} tabIndex={0}>
-      <table className="w-full text-left text-sm">
+    <div className="surface-panel overflow-x-auto" role="region" aria-label={caption} tabIndex={0}>
+      <table className="w-full min-w-[640px] text-left text-sm">
         <caption className="sr-only">{caption}</caption>
         <thead className="bg-slate-50 text-slate-600">
           <tr>
@@ -34,7 +34,10 @@ export function DataTable<T>({
         </thead>
         <tbody>
           {rows.map((row) => (
-            <tr key={rowKey(row)} className="border-b border-slate-100 last:border-0">
+            <tr
+              key={rowKey(row)}
+              className="border-b border-slate-100 even:bg-slate-50/60 hover:bg-teal-50/40 last:border-0"
+            >
               {columns.map((column) => (
                 <td key={column.id} className="px-5 py-4 align-top">
                   {column.cell(row)}

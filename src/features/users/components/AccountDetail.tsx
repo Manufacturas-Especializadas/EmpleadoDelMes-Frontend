@@ -1,4 +1,4 @@
-import { useState } from 'react'
+﻿import { useState } from 'react'
 import { usersApi } from '../usersApi'
 import { useQuery } from '@/shared/hooks/useQuery'
 import { useOperation } from '@/shared/hooks/useOperation'
@@ -45,6 +45,8 @@ export function AccountDetail({
       </Modal>
       <ConfirmDialog
         open={confirm}
+        destructive={account?.isActive}
+        confirmLabel={account?.isActive ? 'Desactivar cuenta' : 'Activar cuenta'}
         title="Cambiar estado del patrocinador"
         description={
           account?.isActive

@@ -1,3 +1,4 @@
+﻿import { BrandLogo } from '@/shared/components/BrandLogo'
 import { TextField } from '@/shared/components/TextField'
 import { useState, type FormEvent } from 'react'
 import { Navigate, useNavigate } from 'react-router'
@@ -36,10 +37,11 @@ export function AuthPage({ change = false }: { change?: boolean }) {
   }
   return (
     <main className="grid min-h-screen place-items-center p-6">
-      <section className="w-full max-w-md rounded-2xl border border-slate-200 bg-white p-8 shadow-sm">
-        <p className="eyebrow">Manufacturas Especializadas</p>
+      <section className="surface-panel w-full max-w-md p-6 sm:p-8">
+        <BrandLogo />
+        <p className="eyebrow mt-5">Manufacturas Especializadas</p>
         <h1 className="mt-3 text-3xl font-bold">
-          {change ? 'Cambia tu contraseña' : 'EmpleadoDelMes'}
+          {change ? 'Cambia tu contraseña' : 'Empleado del Mes'}
         </h1>
         <p className="my-5 text-slate-600">
           {change
@@ -63,7 +65,7 @@ export function AuthPage({ change = false }: { change?: boolean }) {
                     key={role}
                     type="button"
                     disabled={busy}
-                    className="m-1 border px-2 py-1"
+                    className="secondary m-1 text-sm"
                     onClick={async () => {
                       setBusy(true)
                       setError('')

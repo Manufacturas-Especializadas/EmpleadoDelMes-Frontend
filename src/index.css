@@ -1,26 +1,82 @@
 ﻿@import 'tailwindcss';
+/* Paleta provisional teal/slate: pendiente de aprobación corporativa MESA. */
+@theme {
+  --color-primary: var(--color-teal-900);
+  --color-primary-hover: var(--color-teal-800);
+  --color-secondary: var(--color-slate-700);
+  --color-canvas: var(--color-slate-50);
+  --color-surface: #fff;
+  --color-ink: var(--color-slate-900);
+  --color-muted: var(--color-slate-600);
+  --color-border: var(--color-slate-200);
+  --color-danger: var(--color-red-800);
+  --color-danger-soft: var(--color-red-50);
+  --color-warning: var(--color-amber-900);
+  --color-warning-soft: var(--color-amber-50);
+  --color-info: var(--color-blue-800);
+  --color-info-soft: var(--color-blue-50);
+  --color-success: var(--color-emerald-800);
+  --color-success-soft: var(--color-emerald-50);
+  --radius-control: 0.5rem;
+  --radius-panel: 1rem;
+  --shadow-panel: 0 1px 3px rgb(15 23 42 / 0.06);
+  --spacing: 0.25rem;
+}
 @layer base {
   body {
-    @apply m-0 bg-slate-50 text-slate-900 antialiased;
+    @apply m-0 bg-canvas text-ink antialiased;
   }
   label {
-    @apply block text-sm font-medium text-slate-700;
+    @apply block text-sm font-medium text-secondary;
   }
-  input {
-    @apply mt-2 block w-full rounded-lg border border-slate-300 bg-white px-3 py-3;
+  input:not([type='checkbox']):not([type='radio']),
+  select,
+  textarea {
+    @apply mt-2 block min-h-11 w-full min-w-0 rounded-control border border-slate-300 bg-surface px-3 py-2.5 text-base;
+  }
+  input[type='checkbox'],
+  input[type='radio'] {
+    @apply size-4 shrink-0 accent-primary;
   }
   button {
-    @apply cursor-pointer rounded-lg disabled:cursor-wait disabled:opacity-60;
+    @apply min-h-11 cursor-pointer rounded-control disabled:cursor-not-allowed disabled:opacity-60;
   }
   :focus-visible {
-    @apply outline-2 outline-offset-4 outline-teal-700;
+    @apply outline-2 outline-offset-4 outline-primary;
+  }
+  p[role='alert'] {
+    @apply rounded-control border border-red-200 bg-danger-soft p-3 text-danger;
+  }
+  p[role='status'] {
+    @apply rounded-control bg-info-soft p-3 text-info;
+  }
+  td button {
+    @apply px-3 py-2 font-medium text-primary hover:bg-slate-100;
+  }
+  summary {
+    @apply cursor-pointer py-3 font-medium;
   }
 }
 @layer components {
   .primary {
-    @apply rounded-lg bg-teal-900 px-5 py-3 font-semibold text-white hover:bg-teal-800;
+    @apply inline-flex min-h-11 items-center justify-center rounded-control bg-primary px-5 py-3 text-center font-semibold text-white hover:bg-primary-hover;
+  }
+  .secondary {
+    @apply inline-flex min-h-11 items-center justify-center rounded-control border border-slate-300 bg-surface px-4 py-2 font-semibold text-secondary hover:bg-slate-100;
+  }
+  .danger {
+    @apply inline-flex min-h-11 items-center justify-center rounded-control bg-danger px-5 py-3 font-semibold text-white hover:bg-red-900;
   }
   .eyebrow {
-    @apply text-xs font-semibold uppercase tracking-widest text-teal-800;
+    @apply text-xs font-semibold uppercase tracking-widest text-primary;
+  }
+  .surface-panel {
+    @apply rounded-panel border border-border bg-surface shadow-panel;
+  }
+  .nav-item {
+    @apply flex min-h-11 items-center rounded-control border-l-4 border-transparent px-3 py-2.5 text-sm font-medium text-secondary hover:bg-slate-100;
+  }
+  .nav-item-active {
+    @apply border-primary bg-teal-50 font-bold text-primary;
   }
 }

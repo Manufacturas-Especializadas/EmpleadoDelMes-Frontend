@@ -1,4 +1,4 @@
-import { afterEach, describe, expect, it, vi } from 'vitest'
+﻿import { afterEach, describe, expect, it, vi } from 'vitest'
 import { getJson } from '@/shared/api/httpClient'
 
 // Simulamos la configuración de la API.
@@ -36,6 +36,8 @@ describe('getJson', () => {
 
     expect(fetchMock).toHaveBeenCalledWith('https://api.example.test/api/ping', {
       method: 'GET',
+      cache: 'no-store',
+      body: undefined,
       headers: {
         Accept: 'application/json',
       },
@@ -50,6 +52,10 @@ describe('getJson', () => {
     vi.stubGlobal('fetch', fetchMock)
 
     // Act y Assert
-    await expect(getJson('/api/ping')).rejects.toThrow('La API respondió con HTTP 500')
+    await expect(getJson('/api/ping')).rejects.toMatchObject({
+      name: 'ApiError',
+      status: 500,
+      message: 'No pudimos completar la operación. Inténtalo nuevamente.',
+    })
   })
 })

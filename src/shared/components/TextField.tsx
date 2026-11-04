@@ -1,4 +1,4 @@
-import { useId, type ComponentProps } from 'react'
+﻿import { useId, type ComponentProps } from 'react'
 type Props = ComponentProps<'input'> & { label: string; error?: string; hint?: string }
 export function TextField({ label, error, hint, id, ...props }: Props) {
   const generatedId = useId()
@@ -8,7 +8,7 @@ export function TextField({ label, error, hint, id, ...props }: Props) {
       .filter(Boolean)
       .join(' ') || undefined
   return (
-    <div>
+    <div className="min-w-0 max-w-full">
       <label htmlFor={inputId}>{label}</label>
       <input
         {...props}

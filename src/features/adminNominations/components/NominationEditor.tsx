@@ -1,4 +1,4 @@
-import { useState } from 'react'
+﻿import { useState } from 'react'
 import { adminNominationsApi } from '../adminNominationsApi'
 import type { AdminNominationDetail } from '../types'
 import { getCampaign } from '@/features/campaigns'
@@ -181,6 +181,8 @@ function Editor({
       </Modal>
       <ConfirmDialog
         open={action !== null}
+        destructive={action === 'cancel'}
+        confirmLabel={action === 'cancel' ? 'Anular postulación' : 'Guardar corrección'}
         title={action === 'cancel' ? 'Anular postulación' : 'Corregir postulación'}
         description={`Confirma esta operación. Motivo: ${reason}`}
         busy={operation.busy}
