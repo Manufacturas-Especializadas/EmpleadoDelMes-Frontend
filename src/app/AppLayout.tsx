@@ -1,8 +1,9 @@
-﻿import { useRef, useState } from 'react'
+﻿import { Icon } from '@/shared/components/Icon'
+import { useRef, useState } from 'react'
 import { Link, NavLink, Outlet, useLocation } from 'react-router'
 import { logout, roles, useAuth } from '@/features/auth'
 import { BrandLogo } from '@/shared/components/BrandLogo'
-import { adminModules } from './navigation'
+import { adminModules, navigationIcon } from './navigation'
 export function AppLayout() {
   const user = useAuth()!
   const location = useLocation()
@@ -38,20 +39,25 @@ export function AppLayout() {
       <a href="#main-content" className="sr-only focus:not-sr-only focus:block focus:p-4">
         Saltar al contenido
       </a>
-      <header className="border-b border-border bg-surface px-4 py-4 sm:px-6">
+      <header className="border-b border-border bg-surface px-4 py-4 sm:px-6 lg:px-8">
         <div className="mx-auto flex max-w-screen-2xl flex-wrap items-center justify-between gap-4">
-          <div className="flex items-center gap-4">
+          <div className="flex min-w-0 items-center gap-4">
             <BrandLogo />
             <div>
-              <p className="eyebrow">Manufacturas Especializadas</p>
-              <p className="text-xl font-bold">Empleado del Mes</p>
+              <p className="eyebrow hidden sm:block">Manufacturas Especializadas</p>
+              <p className="text-base font-semibold sm:text-xl">Empleado del Mes</p>
             </div>
           </div>
-          <div className="min-w-0">
-            <p className="break-words font-semibold">{user.displayName || user.userName}</p>
-            <p className="text-sm text-muted">
-              {allowedRoles.map((role) => role.label).join(' · ')}
-            </p>
+          <div className="flex min-w-0 items-center gap-3 lg:ml-auto">
+            <span className="icon-tile hidden sm:inline-flex">
+              <Icon name="shield" />
+            </span>
+            <div className="min-w-0">
+              <p className="break-words font-semibold">{user.displayName || user.userName}</p>
+              <p className="text-sm text-muted">
+                {allowedRoles.map((role) => role.label).join(' · ')}
+              </p>
+            </div>
           </div>
           <button
             ref={toggle}
@@ -61,6 +67,7 @@ export function AppLayout() {
             aria-controls="main-navigation"
             onClick={() => setOpenAt(open ? null : location.key)}
           >
+            <Icon name={open ? 'close' : 'menu'} />
             {open ? 'Cerrar menú' : 'Abrir menú'}
           </button>
         </div>
@@ -75,7 +82,8 @@ export function AppLayout() {
         )}
       <div className="mx-auto grid max-w-screen-2xl lg:grid-cols-[272px_minmax(0,1fr)]">
         <aside
-          className={`${open ? 'block' : 'hidden'} border-b border-border bg-surface p-4 lg:block lg:min-h-[calc(100dvh-100px)] lg:border-r lg:border-b-0`}
+          className="app-sidebar"
+          data-open={open}
           onKeyDown={(event) => {
             if (event.key === 'Escape') {
               setOpenAt(null)
@@ -83,41 +91,47 @@ export function AppLayout() {
             }
           }}
         >
-          <nav id="main-navigation" aria-label="Navegación principal" className="space-y-6">
-            {groups
-              .filter((group) => group.items.length)
-              .map((group) => (
-                <section key={group.label}>
-                  <h2 className="mb-2 px-3 text-xs font-semibold uppercase tracking-wider text-muted">
-                    {group.label}
-                  </h2>
-                  <ul className="space-y-1">
-                    {group.items.map((item) => (
-                      <li key={item.path}>
-                        <NavLink
-                          end={allowedRoles.some((role) => role.path === item.path)}
-                          to={item.path}
-                          onClick={() => {
-                            setOpenAt(null)
-                            if (open) toggle.current?.focus()
-                          }}
-                          className={({ isActive }) =>
-                            `nav-item ${isActive ? 'nav-item-active' : ''}`
-                          }
-                        >
-                          {item.label}
-                        </NavLink>
-                      </li>
-                    ))}
-                  </ul>
-                  {group.label === 'Mi cuenta' && (
-                    <button onClick={logout} className="nav-item w-full text-left">
-                      Cerrar sesión
-                    </button>
-                  )}
-                </section>
-              ))}
-          </nav>
+          <div className="sidebar-clip">
+            <div className="sidebar-inner">
+              <nav id="main-navigation" aria-label="Navegación principal">
+                {groups
+                  .filter((group) => group.items.length)
+                  .map((group) => (
+                    <section key={group.label} className="nav-group">
+                      <h2 className="mb-2 px-3 text-[10px] font-bold uppercase tracking-[0.14em] text-muted">
+                        {group.label}
+                      </h2>
+                      <ul className="space-y-1">
+                        {group.items.map((item) => (
+                          <li key={item.path}>
+                            <NavLink
+                              end={allowedRoles.some((role) => role.path === item.path)}
+                              to={item.path}
+                              onClick={() => {
+                                setOpenAt(null)
+                                if (open) toggle.current?.focus()
+                              }}
+                              className={({ isActive }) =>
+                                `nav-item ${isActive ? 'nav-item-active' : ''}`
+                              }
+                            >
+                              <Icon name={navigationIcon(item.path)} />
+                              <span>{item.label}</span>
+                            </NavLink>
+                          </li>
+                        ))}
+                      </ul>
+                      {group.label === 'Mi cuenta' && (
+                        <button onClick={logout} className="nav-item w-full text-left">
+                          <Icon name="logout" />
+                          Cerrar sesión
+                        </button>
+                      )}
+                    </section>
+                  ))}
+              </nav>
+            </div>
+          </div>
         </aside>
         <main id="main-content" tabIndex={-1} className="min-w-0 p-4 sm:p-6 lg:p-8">
           {current && (
@@ -135,7 +149,9 @@ export function AppLayout() {
               </span>
             </nav>
           )}
-          <Outlet />
+          <div className="screen-content">
+            <Outlet />
+          </div>
         </main>
       </div>
     </div>

@@ -1,4 +1,4 @@
-import { useState } from 'react'
+﻿import { useState } from 'react'
 import { employeesApi } from '../employeesApi'
 import { EmployeeSearch } from '../components/EmployeeSearch'
 import { EmployeeEditor } from '../components/EmployeeEditor'
@@ -23,7 +23,7 @@ export function EmployeesPage() {
       />
       {message && <p role="status">{message}</p>}
       <form
-        className="flex flex-wrap items-end gap-3"
+        className="filter-panel"
         onSubmit={(event) => {
           event.preventDefault()
           void operation.run(async (signal) => {
@@ -63,3 +63,4 @@ export function EmployeesPage() {
     </div>
   )
 }
+

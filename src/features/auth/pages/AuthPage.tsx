@@ -1,4 +1,6 @@
-﻿import { BrandLogo } from '@/shared/components/BrandLogo'
+﻿import { SuccessMessage } from '@/shared/components/SuccessMessage'
+import { Icon } from '@/shared/components/Icon'
+import { BrandLogo } from '@/shared/components/BrandLogo'
 import { TextField } from '@/shared/components/TextField'
 import { useState, type FormEvent } from 'react'
 import { Navigate, useNavigate } from 'react-router'
@@ -36,22 +38,36 @@ export function AuthPage({ change = false }: { change?: boolean }) {
     }
   }
   return (
-    <main className="grid min-h-screen place-items-center p-6">
-      <section className="surface-panel w-full max-w-md p-6 sm:p-8">
+    <main className="auth-shell">
+      <div className="hidden lg:block">
+        <span className="icon-tile mb-8">
+          <Icon name="award" />
+        </span>
+        <p className="eyebrow">Manufacturas Especializadas</p>
+        <h2 className="mt-5 max-w-lg text-5xl leading-[1.12] font-semibold tracking-tight">
+          El talento de nuestra gente merece reconocimiento.
+        </h2>
+        <p className="mt-6 max-w-md text-lg leading-8 text-muted">
+          Un espacio para reconocer a quienes hacen la diferencia en MESA.
+        </p>
+        <div className="mt-10 flex items-center gap-3 border-t border-border pt-6 text-sm text-muted">
+          <Icon name="users" />
+          Empleado del Mes · Plataforma interna
+        </div>
+      </div>
+      <section className="auth-panel">
         <BrandLogo />
         <p className="eyebrow mt-5">Manufacturas Especializadas</p>
-        <h1 className="mt-3 text-3xl font-bold">
+        <h1 className="mt-4 text-3xl font-semibold">
           {change ? 'Cambia tu contraseña' : 'Empleado del Mes'}
         </h1>
-        <p className="my-5 text-slate-600">
+        <p className="my-5 text-muted">
           {change
             ? 'Actualiza tu contraseña antes de continuar.'
             : 'Inicia sesión con tu cuenta institucional.'}
         </p>
         {!change && new URLSearchParams(location.search).has('changed') && (
-          <p role="status" className="mb-4 text-emerald-800">
-            Contraseña actualizada. Inicia sesión nuevamente.
-          </p>
+          <SuccessMessage>Contraseña actualizada. Inicia sesión nuevamente.</SuccessMessage>
         )}
         <form onSubmit={submit} className="space-y-4" aria-busy={busy}>
           {import.meta.env.DEV &&
@@ -124,12 +140,12 @@ export function AuthPage({ change = false }: { change?: boolean }) {
                 required
                 disabled={busy}
               />
-              <p className="text-sm text-slate-500">Mínimo 12 caracteres.</p>
+              <p className="text-sm text-muted">Mínimo 12 caracteres.</p>
             </>
           )}
           <button
             type="button"
-            className="text-sm text-teal-800"
+            className="quiet -ml-3 text-sm"
             aria-pressed={visible}
             onClick={() => setVisible(!visible)}
           >
@@ -141,11 +157,16 @@ export function AuthPage({ change = false }: { change?: boolean }) {
             </p>
           )}
           <button disabled={busy} className="primary w-full">
+            {busy ? (
+              <span className="spinner" aria-hidden="true" />
+            ) : (
+              <Icon name={change ? 'lock' : 'arrow'} />
+            )}
             {busy ? 'Procesando…' : change ? 'Actualizar contraseña' : 'Iniciar sesión'}
           </button>
         </form>
         {change && (
-          <button className="mt-5" onClick={logout}>
+          <button className="quiet mt-5 w-full" onClick={logout}>
             Cerrar sesión
           </button>
         )}

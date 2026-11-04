@@ -1,4 +1,4 @@
-import { useState } from 'react'
+﻿import { useState } from 'react'
 import { usersApi } from '../usersApi'
 import { CreateAccount } from '../components/CreateAccount'
 import { AccountDetail } from '../components/AccountDetail'
@@ -28,14 +28,14 @@ export function UsersPage() {
             <button className="primary" onClick={() => setCreate('sponsor')}>
               Crear patrocinador
             </button>
-            <button className="primary" onClick={() => setCreate('department')}>
+            <button className="secondary" onClick={() => setCreate('department')}>
               Crear cuenta departamental
             </button>
           </div>
         }
       />
       <form
-        className="my-4 flex flex-wrap items-end gap-3"
+        className="filter-panel"
         onSubmit={(event) => {
           event.preventDefault()
           setFilter({ term: term.trim(), role, page: 1 })
@@ -57,7 +57,7 @@ export function UsersPage() {
         </label>
         <button className="primary">Buscar</button>
       </form>
-      {query.loading && <LoadingState />}
+      {query.loading && <LoadingState variant="table" />}
       {query.error && <ErrorState message={query.error} onRetry={query.reload} />}
       {query.data && (
         <>

@@ -67,7 +67,7 @@ function CampaignContent({ campaignId }: { campaignId: string }) {
       />
       {message && <p role="status">{message}</p>}
       {operation.error && !selected && <p role="alert">{operation.error}</p>}
-      {query.loading && <LoadingState />}
+      {query.loading && <LoadingState variant="table" />}
       {query.error && <ErrorState message={query.error} onRetry={query.reload} />}
       {query.data && (
         <>

@@ -67,7 +67,7 @@ function OpinionForm({
           <p className="whitespace-pre-wrap">{status.opinion.content}</p>
         </details>
       )}
-      <p className="my-3 text-sm text-slate-600">
+      <p className="my-3 text-sm text-muted">
         El servidor permite guardar únicamente durante el periodo abierto y mientras el candidato
         siga preseleccionado.
       </p>

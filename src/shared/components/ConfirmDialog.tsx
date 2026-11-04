@@ -1,4 +1,5 @@
-﻿import { Modal } from './Modal'
+﻿import { Icon } from './Icon'
+import { Modal } from './Modal'
 export function ConfirmDialog({
   open,
   title,
@@ -22,6 +23,9 @@ export function ConfirmDialog({
 }) {
   return (
     <Modal open={open} title={title} description={description} onClose={onCancel} busy={busy}>
+      <span className={destructive ? 'icon-tile bg-danger-soft text-danger' : 'icon-tile'}>
+        <Icon name={destructive ? 'alert' : 'check'} />
+      </span>
       {error && (
         <p role="alert" className="text-red-700">
           {error}
@@ -37,9 +41,10 @@ export function ConfirmDialog({
           onClick={onConfirm}
           className={destructive ? 'danger' : 'primary'}
         >
-          {busy ? 'Procesando…' : confirmLabel}
+          {busy && <span className="spinner" aria-hidden="true" />}{busy ? 'Procesando…' : confirmLabel}
         </button>
       </div>
     </Modal>
   )
 }
+

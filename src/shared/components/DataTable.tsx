@@ -21,12 +21,12 @@ export function DataTable<T>({
   if (!rows.length) return emptyState ?? <EmptyState />
   return (
     <div className="surface-panel overflow-x-auto" role="region" aria-label={caption} tabIndex={0}>
-      <table className="w-full min-w-[640px] text-left text-sm">
+      <table className="data-table">
         <caption className="sr-only">{caption}</caption>
-        <thead className="bg-slate-50 text-slate-600">
+        <thead>
           <tr>
             {columns.map((column) => (
-              <th key={column.id} scope="col" className="px-5 py-4 font-semibold">
+              <th key={column.id} scope="col">
                 {column.header}
               </th>
             ))}
@@ -34,14 +34,9 @@ export function DataTable<T>({
         </thead>
         <tbody>
           {rows.map((row) => (
-            <tr
-              key={rowKey(row)}
-              className="border-b border-slate-100 even:bg-slate-50/60 hover:bg-teal-50/40 last:border-0"
-            >
+            <tr key={rowKey(row)}>
               {columns.map((column) => (
-                <td key={column.id} className="px-5 py-4 align-top">
-                  {column.cell(row)}
-                </td>
+                <td key={column.id}>{column.cell(row)}</td>
               ))}
             </tr>
           ))}

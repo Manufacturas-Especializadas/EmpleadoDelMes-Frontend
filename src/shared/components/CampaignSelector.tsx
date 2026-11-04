@@ -32,7 +32,7 @@ export function CampaignSelector({
   )
   if (!allowed)
     return <ErrorState message="No tienes permiso para consultar estas convocatorias." />
-  if (query.loading) return <LoadingState message="Cargando convocatorias…" />
+  if (query.loading) return <LoadingState variant="header" message="Cargando convocatorias…" />
   if (query.error) return <ErrorState message={query.error} onRetry={query.reload} />
   const items = sortCampaigns(query.data ?? [])
   if (!items.length)
@@ -52,7 +52,7 @@ export function CampaignSelector({
           La convocatoria del enlace no está disponible. Se muestra una convocatoria disponible.
         </p>
       )}
-      <label className="my-5 max-w-xl">
+      <label className="campaign-filter">
         Convocatoria
         <select
           value={id}

@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react'
+﻿import { useEffect, useState } from 'react'
 import { Link } from 'react-router'
 import { getCampaigns } from '../campaignsApi'
 import type { Campaign, CampaignPage, CampaignPeriod } from '../types'
@@ -24,10 +24,10 @@ function PeriodStatus({ period, isOpen }: { period: CampaignPeriod; isOpen: bool
         {isOpen ? 'Abierto' : 'Cerrado'}
       </StatusBadge>
 
-      <p className="text-xs text-slate-500">{modeLabel}</p>
+      <p className="text-xs text-muted">{modeLabel}</p>
 
       {period.scheduledOpeningAtUtc && period.scheduledClosingAtUtc && (
-        <p className="text-xs text-slate-500">
+        <p className="text-xs text-muted">
           {formatDate(period.scheduledOpeningAtUtc)}
           {' — '}
           {formatDate(period.scheduledClosingAtUtc)}
@@ -42,7 +42,7 @@ const columns: Column<Campaign>[] = [
     id: 'detail',
     header: 'Detalle',
     cell: (campaign) => (
-      <Link className="text-teal-800 underline" to={`/admin/campaigns/${campaign.id}`}>
+      <Link className="text-primary underline" to={`/admin/campaigns/${campaign.id}`}>
         Administrar
       </Link>
     ),
@@ -128,19 +128,15 @@ export function CampaignsPage() {
             type="button"
             onClick={() => setRefreshKey((value) => value + 1)}
             disabled={loading}
-            className="border border-slate-300 bg-white px-4 py-2 font-medium text-slate-700"
+            className="secondary"
           >
             Actualizar
           </button>
         }
       />
-      <section
-        aria-label="Listado de convocatorias"
-        aria-busy={loading}
-        className="overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-sm"
-      >
+      <section aria-label="Listado de convocatorias" aria-busy={loading} className="min-w-0">
         {loading ? (
-          <LoadingState message="Cargando convocatorias..." />
+          <LoadingState variant="table" message="Cargando convocatorias..." />
         ) : error ? (
           <ErrorState message={error} onRetry={() => setRefreshKey((value) => value + 1)} />
         ) : (

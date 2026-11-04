@@ -31,7 +31,7 @@ function CampaignContent({ campaignId }: { campaignId: string }) {
     <div>
       <PageHeader title="Administración de postulaciones" />
       <form
-        className="my-4 flex flex-wrap items-end gap-3"
+        className="filter-panel"
         onSubmit={(event) => {
           event.preventDefault()
           setFilter({ campaignId: campaignId.trim(), term: term.trim(), status, page: 1 })
@@ -52,7 +52,7 @@ function CampaignContent({ campaignId }: { campaignId: string }) {
         </label>
         <button className="primary">Buscar</button>
       </form>
-      {query.loading && <LoadingState />}
+      {query.loading && <LoadingState variant="table" />}
       {query.error && <ErrorState message={query.error} onRetry={query.reload} />}
       {query.data && (
         <>

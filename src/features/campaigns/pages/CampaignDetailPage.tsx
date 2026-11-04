@@ -70,7 +70,11 @@ export function CampaignDetailPage() {
       <PageHeader
         title={campaign ? formatMonth(campaign.evaluationMonth) : 'Detalle de convocatoria'}
         description="Administra los periodos y consulta el proceso de reconocimiento."
-        actions={<Link to="/admin/campaigns">Volver al listado</Link>}
+        actions={
+          <Link className="secondary" to="/admin/campaigns">
+            Volver al listado
+          </Link>
+        }
       />
       {message && <p role="status">{message}</p>}
       {operation.error && !action && !schedule && (
@@ -78,7 +82,7 @@ export function CampaignDetailPage() {
           {operation.error}
         </p>
       )}
-      {query.loading && <LoadingState />}
+      {query.loading && <LoadingState variant="cards" />}
       {query.error && <ErrorState message={query.error} onRetry={query.reload} />}
       {campaign && (
         <>
@@ -94,7 +98,7 @@ export function CampaignDetailPage() {
                   ? campaign.canAcceptNominations
                   : campaign.canAcceptOpinions
               return (
-                <section key={period} className="rounded-xl border border-slate-200 bg-white p-4">
+                <section key={period} className="surface-panel space-y-3 p-5 sm:p-6">
                   <h2 className="font-semibold">
                     {period === 'nominations' ? 'Postulaciones' : 'Opiniones'}
                   </h2>
@@ -124,7 +128,7 @@ export function CampaignDetailPage() {
             {actions.map((item) => (
               <button
                 key={item.action}
-                className="border border-slate-300 px-4 py-2"
+                className="secondary"
                 disabled={operation.busy}
                 onClick={() => {
                   operation.clearError()
@@ -136,9 +140,15 @@ export function CampaignDetailPage() {
             ))}
           </div>
           <nav className="flex flex-wrap gap-4">
-            <Link to={`/admin/nominations?campaignId=${id}`}>Administrar postulaciones</Link>
-            <Link to={`/admin/preselections?campaignId=${id}`}>Preselección</Link>
-            <Link to={`/admin/review?campaignId=${id}`}>Revisión integral</Link>
+            <Link className="secondary" to={`/admin/nominations?campaignId=${id}`}>
+              Administrar postulaciones
+            </Link>
+            <Link className="secondary" to={`/admin/preselections?campaignId=${id}`}>
+              Preselección
+            </Link>
+            <Link className="secondary" to={`/admin/review?campaignId=${id}`}>
+              Revisión integral
+            </Link>
           </nav>
         </>
       )}

@@ -1,3 +1,4 @@
+﻿import { SuccessMessage } from '@/shared/components/SuccessMessage'
 import { useState, type ReactNode } from 'react'
 import { useOperation } from '@/shared/hooks/useOperation'
 import { PageHeader } from '@/shared/components/PageHeader'
@@ -32,7 +33,7 @@ export function ImportWorkflow<P, R>({
         title={title}
         description="Excel .xlsx, máximo 5 MB y 1,000 registros. La validación de contenido corresponde al servidor."
       />
-      <p>
+      <p className="detail-card text-sm leading-6 text-muted">
         Primera hoja, encabezados Nómina y Nombre completo. También se aceptan Número de nómina,
         Número nómina, PayrollNumber; Nombre o FullName. Conserva las nóminas como texto y no uses
         fórmulas.
@@ -78,7 +79,7 @@ export function ImportWorkflow<P, R>({
       >
         Consultar vista previa
       </button>
-      {operation.busy && <LoadingState message="Procesando archivo…" />}
+      {operation.busy && <LoadingState variant="compact" message="Procesando archivo…" />}
       {operation.error && (
         <p role="alert" className="text-red-700">
           {operation.error}
@@ -99,7 +100,7 @@ export function ImportWorkflow<P, R>({
           </button>
         </>
       )}
-      {result !== null && <section role="status">{renderResult(result)}</section>}
+      {result !== null && <SuccessMessage>{renderResult(result)}</SuccessMessage>}
       <ConfirmDialog
         open={confirm}
         title="Confirmar importación"
