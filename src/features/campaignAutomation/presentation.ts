@@ -29,10 +29,10 @@ export function calendarError(calendar: AutomationCalendar): string | null {
     const closingTime = calendar[`${prefix}ClosingLocalTime`]
     if (
       [openingDay, closingDay].some(
-        (day) => day === null || !Number.isInteger(day) || day < 0 || day > 365,
+        (day) => day === null || !Number.isInteger(day) || day < -31 || day > 365,
       )
     )
-      return `${title}: indica días enteros de 0 a 365.`
+      return `${title}: indica días enteros de -31 a 365.`
     if (
       !openingTime ||
       !closingTime ||
@@ -44,6 +44,13 @@ export function calendarError(calendar: AutomationCalendar): string | null {
       return `${title}: el cierre debe ser posterior a la apertura.`
   }
   return null
+}
+export function relativeDayHint(day: number | null): string {
+  if (day === null || !Number.isInteger(day))
+    return 'De -31 a 365 días; usa un valor negativo para anticipar la fecha.'
+  if (day < 0) return `${Math.abs(day)} día(s) antes del primer día del mes siguiente al evaluado.`
+  if (day === 0) return 'Primer día del mes siguiente al evaluado.'
+  return `${day} día(s) después del primer día del mes siguiente al evaluado.`
 }
 const monterrey = new Intl.DateTimeFormat('es-MX', {
   timeZone: 'America/Monterrey',

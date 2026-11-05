@@ -21,7 +21,8 @@ export function PreviewResults({ preview }: { preview: AutomationPreview }) {
     <div className="space-y-4">
       <p className="text-sm text-muted">
         Horario de Monterrey · {preview.pendingMonths.length} mes(es) pendiente(s) de generación
-        según el servidor. La vista previa no reserva fechas ni guarda cambios.
+        según el servidor, incluido el mes actual si todavía no existe. La vista previa no reserva
+        fechas ni guarda cambios; los conflictos pueden impedir la generación.
       </p>
       {preview.months.slice((page - 1) * pageSize, page * pageSize).map((month) => {
         const existing = month.existingCampaign
@@ -53,8 +54,8 @@ export function PreviewResults({ preview }: { preview: AutomationPreview }) {
                     ? 'Archivada · sin cambios'
                     : 'Existente · sin cambios'
                   : month.isPending
-                    ? 'Pendiente'
-                    : 'Próximo mes'}
+                    ? 'Nueva · pendiente de generación'
+                    : 'Futura · planificada'}
               </StatusBadge>
             </div>
             <p className="mt-3 text-sm text-muted">
@@ -67,12 +68,12 @@ export function PreviewResults({ preview }: { preview: AutomationPreview }) {
                 <dt className="text-muted">
                   {month.alreadyExists
                     ? 'Fecha de creación registrada'
-                    : 'Fecha de creación prevista'}
+                    : 'Disponibilidad para creación automática'}
                 </dt>
                 <dd className="mt-1 font-medium">
                   {month.alreadyExists
                     ? plantDate(existing?.createdAtUtc ?? null)
-                    : 'No informada por el servidor; depende de la siguiente comprobación habilitada.'}
+                    : `Desde el primer día de ${formatMonth(month.evaluationMonth)}, sujeto al límite de recuperación y a la próxima comprobación habilitada sin conflictos. El servidor no informa una hora exacta de creación.`}
                 </dd>
               </div>
               {[
