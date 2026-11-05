@@ -1,6 +1,12 @@
 ﻿import type { IconName } from '@/shared/components/Icon'
 export const adminModules = [
   {
+    path: '/admin/settings/campaign-automation',
+    label: 'Automatización de convocatorias',
+    group: 'Configuración',
+    description: 'Configura el calendario mensual y revisa su estado de ejecución.',
+  },
+  {
     path: '/admin/campaigns',
     label: 'Convocatorias',
     group: 'Proceso de reconocimiento',
@@ -51,6 +57,7 @@ export const adminModules = [
 ]
 
 export function navigationIcon(path: string): IconName {
+  if (path.includes('settings')) return 'calendar'
   if (path.includes('imports')) return 'file'
   if (path.includes('campaigns')) return 'calendar'
   if (path.includes('preselections')) return 'checkUser'
