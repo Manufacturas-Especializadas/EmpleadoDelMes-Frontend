@@ -14,7 +14,7 @@ import { TextField } from '@/shared/components/TextField'
 import { ToggleSwitch } from '@/shared/components/ToggleSwitch'
 import { formatMonth } from '@/shared/utils/formatDate'
 import { automationDemo, getAutomation, previewAutomation, saveAutomation } from './automationApi'
-import { calendarError, emptyCalendar, periods, plantDate } from './presentation'
+import { calendarError, emptyCalendar, periods, plantDate, relativeDayHint } from './presentation'
 import { PreviewResults } from './PreviewResults'
 import type { AutomationCalendar, AutomationPreview, AutomationState } from './types'
 
@@ -206,9 +206,12 @@ function AutomationEditor({
           )}
         </section>
         <p className="text-sm leading-6 text-muted">
-          Los días se cuentan desde el primer día del mes siguiente al evaluado: día relativo 0 =
-          primer día; 9 = décimo día. Para evaluar octubre, el día 0 es el 1 de noviembre. Todas las
-          horas son locales de Monterrey.
+          Los días se cuentan desde el primer día del mes siguiente al evaluado. Un número negativo
+          adelanta la fecha. Ejemplo de calendario anticipado: apertura −8 a las 00:00 y cierre 7 a
+          las 00:00 en ambos periodos. Para octubre de 2026 corresponde al 24 de octubre y al 8 de
+          noviembre. El día −8 abre siete días antes del último día de cada mes; el cierre deja
+          completos los primeros siete días del mes siguiente. Todas las horas son de Monterrey.
+          Este ejemplo no cambia tus valores guardados: revísalos y confirma cualquier modificación.
         </p>
         <div className="grid items-start gap-5 lg:grid-cols-2">
           {periods.map(({ prefix, title, description }) => (
@@ -220,8 +223,8 @@ function AutomationEditor({
                   <TextField
                     label={`Día relativo de ${point === 'Opening' ? 'apertura' : 'cierre'}`}
                     type="number"
-                    inputMode="numeric"
-                    min={0}
+                    inputMode="text"
+                    min={-31}
                     max={365}
                     step={1}
                     required
@@ -232,7 +235,7 @@ function AutomationEditor({
                         event.target.value === '' ? null : Number(event.target.value),
                       )
                     }
-                    hint="De 0 a 365 días."
+                    hint={relativeDayHint(calendar[`${prefix}${point}DayOffset`])}
                   />
                   <TextField
                     label={`Hora de ${point === 'Opening' ? 'apertura' : 'cierre'}`}
@@ -263,9 +266,10 @@ function AutomationEditor({
             Vista previa
           </h2>
           <p className="text-sm text-muted">
-            Revisa los horarios propuestos y los meses pendientes. Las convocatorias existentes
-            conservan sus periodos. El servidor valida solapamientos y horarios ambiguos o
-            inexistentes.
+            Revisa el mes actual, los meses históricos pendientes autorizados y los futuros
+            planificados. Recuperar una convocatoria no recupera postulaciones u opiniones de
+            periodos transcurridos. Las convocatorias existentes conservan sus periodos. El servidor
+            valida solapamientos y horarios ambiguos o inexistentes.
           </p>
           <div className="flex flex-wrap items-end gap-3">
             <div className="w-full sm:w-48">
