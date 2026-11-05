@@ -21,7 +21,7 @@ export function HomePage({ role }: { role: string }) {
         </p>
       </section>
       {user?.roles.includes('Administrator') &&
-        ['Proceso de reconocimiento', 'Administración'].map((group) => (
+        ['Proceso de reconocimiento', 'Administración', 'Configuración'].map((group) => (
           <section key={group}>
             <h2 className="mb-4 text-xl font-semibold">{group}</h2>
             <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-4">

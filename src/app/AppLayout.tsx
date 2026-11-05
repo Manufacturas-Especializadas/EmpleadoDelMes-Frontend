@@ -28,7 +28,7 @@ export function AppLayout() {
               : `Opiniones · ${role.label}`,
       })),
     },
-    ...['Proceso de reconocimiento', 'Administración'].map((label) => ({
+    ...['Proceso de reconocimiento', 'Administración', 'Configuración'].map((label) => ({
       label,
       items: modules.filter((item) => item.group === label),
     })),

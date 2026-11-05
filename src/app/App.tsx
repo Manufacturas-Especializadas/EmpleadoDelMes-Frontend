@@ -12,6 +12,7 @@ import { EmployeesPage } from '@/features/employees'
 import { UsersPage } from '@/features/users'
 import { EmployeeImportPage, SponsorImportPage } from '@/features/imports'
 import { AdminNominationsPage } from '@/features/adminNominations'
+import { CampaignAutomationPage } from '@/features/campaignAutomation/CampaignAutomationPage'
 
 function Guard({ role }: { role?: string }) {
   const user = useAuth()
@@ -60,6 +61,10 @@ export default function App() {
           ))}
 
           <Route element={<Guard role="Administrator" />}>
+            <Route
+              path="/admin/settings/campaign-automation"
+              element={<CampaignAutomationPage />}
+            />
             <Route path="/admin/campaigns" element={<CampaignsPage />} />
             <Route path="/admin/campaigns/:id" element={<CampaignDetailPage />} />
             <Route path="/admin/preselections" element={<PreselectionsPage />} />
