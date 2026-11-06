@@ -1,4 +1,5 @@
-﻿import { useState } from 'react'
+﻿import { assignmentDemo } from '@/features/sponsorAssignments/api'
+import { useState } from 'react'
 import { CampaignSelector } from '@/shared/components/CampaignSelector'
 import { reviewApi } from '../reviewApi'
 import type { ReviewCandidate } from '../types'
@@ -72,6 +73,18 @@ function CampaignContent({ campaignId }: { campaignId: string }) {
                 cell: (row) => <OpinionBadge value={row.qualityHasOpinion} />,
               },
               {
+                id: 'supervisor',
+                header: 'Jefe inmediato',
+                cell: (row) =>
+                  assignmentDemo ? (
+                    'No disponible en demo'
+                  ) : row.hasEvaluator ? (
+                    <OpinionBadge value={row.immediateSupervisorHasOpinion} />
+                  ) : (
+                    <StatusBadge tone="warning">Pendiente de asignar evaluador</StatusBadge>
+                  ),
+              },
+              {
                 id: 'detail',
                 header: 'Detalle',
                 cell: (row) => <button onClick={() => setCandidate(row)}>Consultar</button>,
@@ -81,7 +94,13 @@ function CampaignContent({ campaignId }: { campaignId: string }) {
           <Pagination {...query.data} onPageChange={(page) => setFilter({ ...filter, page })} />
         </>
       )}
-      {candidate && <ReviewDetail candidate={candidate} onClose={() => setCandidate(null)} />}
+      {candidate && (
+        <ReviewDetail
+          candidate={candidate}
+          onClose={() => setCandidate(null)}
+          onChanged={query.reload}
+        />
+      )}
     </div>
   )
 }

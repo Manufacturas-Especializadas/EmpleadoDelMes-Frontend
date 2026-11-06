@@ -1,3 +1,5 @@
+﻿import { SponsorAssignmentsPage } from '@/features/sponsorAssignments/SponsorAssignmentsPage'
+import { SupervisorOpinionsPage } from '@/features/supervisorOpinions/SupervisorOpinionsPage'
 import { useEffect } from 'react'
 import { LoadingState } from '@/shared/components/LoadingState'
 import { ErrorState } from '@/shared/components/ErrorState'
@@ -109,7 +111,11 @@ export default function App() {
             </Route>
           ))}
 
+          <Route element={<Guard role="Sponsor" />}>
+            <Route path="/sponsor/my-employees" element={<SupervisorOpinionsPage />} />
+          </Route>
           <Route element={<Guard role="Administrator" />}>
+            <Route path="/admin/sponsor-assignments" element={<SponsorAssignmentsPage />} />
             <Route
               path="/admin/settings/campaign-automation"
               element={<CampaignAutomationPage />}

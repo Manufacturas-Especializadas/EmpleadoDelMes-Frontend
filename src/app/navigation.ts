@@ -1,5 +1,12 @@
 ﻿import type { IconName } from '@/shared/components/Icon'
+export const sponsorModules = [{ path: '/sponsor/my-employees', label: 'Mis colaboradores' }]
 export const adminModules = [
+  {
+    path: '/admin/sponsor-assignments',
+    label: 'Asignación de colaboradores',
+    group: 'Administración',
+    description: 'Asigna, reasigna o retira colaboradores de cada patrocinador.',
+  },
   {
     path: '/admin/settings/campaign-automation',
     label: 'Automatización de convocatorias',
@@ -57,6 +64,7 @@ export const adminModules = [
 ]
 
 export function navigationIcon(path: string): IconName {
+  if (path.includes('sponsor-assignments')) return 'users'
   if (path.includes('settings')) return 'calendar'
   if (path.includes('imports')) return 'file'
   if (path.includes('campaigns')) return 'calendar'
