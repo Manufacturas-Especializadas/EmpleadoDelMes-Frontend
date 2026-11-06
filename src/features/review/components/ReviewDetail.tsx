@@ -1,4 +1,5 @@
-﻿import { reviewApi } from '../reviewApi'
+﻿import { EvaluatorLink } from './EvaluatorLink'
+import { reviewApi } from '../reviewApi'
 import type { ReviewCandidate } from '../types'
 import { qualityLabels } from '@/features/nominations'
 import { useQuery } from '@/shared/hooks/useQuery'
@@ -10,9 +11,11 @@ import { formatDate, formatMonth } from '@/shared/utils/formatDate'
 export function ReviewDetail({
   candidate,
   onClose,
+  onChanged,
 }: {
   candidate: ReviewCandidate
   onClose: () => void
+  onChanged: () => void
 }) {
   const query = useQuery(candidate.campaignId + candidate.candidateEmployeeId, (signal) =>
     reviewApi.get(candidate.campaignId, candidate.candidateEmployeeId, signal),
@@ -43,29 +46,36 @@ export function ReviewDetail({
               <p className="whitespace-pre-wrap">{item.justification}</p>
             </article>
           ))}
-          <h3 className="font-semibold">Opiniones departamentales</h3>
-          {detail.opinions
-            .filter((item) => item.opinionSource !== 4)
-            .map((item) => (
-              <article key={item.opinionSource} className="detail-card">
-                <h4>
-                  {
-                    { 1: 'Recursos Humanos', 2: 'Seguridad', 3: 'Calidad', 4: 'Jefe inmediato' }[
-                      item.opinionSource
-                    ]
-                  }
-                </h4>
-                <StatusBadge tone={item.hasOpinion ? 'success' : 'warning'}>
-                  {item.hasOpinion ? 'Registrada' : 'Pendiente'}
-                </StatusBadge>
-                {item.hasOpinion && (
-                  <>
-                    <p className="whitespace-pre-wrap">{item.content}</p>
-                    <p>{formatDate(item.lastModifiedAtUtc)}</p>
-                  </>
-                )}
-              </article>
-            ))}
+          <EvaluatorLink
+            campaignId={detail.campaignId}
+            candidateId={detail.candidateEmployeeId}
+            evaluatorId={detail.evaluatorEmployeeId}
+            onChanged={() => {
+              query.reload()
+              onChanged()
+            }}
+          />
+          <h3 className="font-semibold">Opiniones</h3>
+          {detail.opinions.map((item) => (
+            <article key={item.opinionSource} className="detail-card">
+              <h4>
+                {
+                  { 1: 'Recursos Humanos', 2: 'Seguridad', 3: 'Calidad', 4: 'Jefe inmediato' }[
+                    item.opinionSource
+                  ]
+                }
+              </h4>
+              <StatusBadge tone={item.hasOpinion ? 'success' : 'warning'}>
+                {item.hasOpinion ? 'Registrada' : 'Pendiente'}
+              </StatusBadge>
+              {item.hasOpinion && (
+                <>
+                  <p className="whitespace-pre-wrap">{item.content}</p>
+                  <p>{formatDate(item.lastModifiedAtUtc)}</p>
+                </>
+              )}
+            </article>
+          ))}
         </div>
       )}
     </Modal>

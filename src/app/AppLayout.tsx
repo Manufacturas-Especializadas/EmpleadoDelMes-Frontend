@@ -3,7 +3,7 @@ import { useRef, useState } from 'react'
 import { Link, NavLink, Outlet, useLocation } from 'react-router'
 import { logout, roles, useAuth } from '@/features/auth'
 import { BrandLogo } from '@/shared/components/BrandLogo'
-import { adminModules, navigationIcon } from './navigation'
+import { adminModules, navigationIcon, sponsorModules } from './navigation'
 export function AppLayout() {
   const user = useAuth()!
   const location = useLocation()
@@ -28,6 +28,7 @@ export function AppLayout() {
               : `Opiniones · ${role.label}`,
       })),
     },
+    ...(user.roles.includes('Sponsor') ? [{ label: 'Mi equipo', items: sponsorModules }] : []),
     ...['Proceso de reconocimiento', 'Administración', 'Configuración'].map((label) => ({
       label,
       items: modules.filter((item) => item.group === label),

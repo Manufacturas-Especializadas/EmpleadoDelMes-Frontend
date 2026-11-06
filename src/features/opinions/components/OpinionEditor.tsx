@@ -11,14 +11,20 @@ import { formatDate } from '@/shared/utils/formatDate'
 function OpinionForm({
   candidate,
   readOnly = false,
+  api = opinionsApi,
+  label = 'Opinión de tu departamento',
   initial,
   onSaved,
+  onConflict,
   onClose,
 }: {
+  api?: Pick<typeof opinionsApi, 'get' | 'save'>
+  label?: string
   readOnly?: boolean
   candidate: OpinionCandidate
   initial: OpinionStatus
   onSaved: () => void
+  onConflict?: () => void
   onClose: () => void
 }) {
   const [status, setStatus] = useState(initial)
@@ -28,7 +34,7 @@ function OpinionForm({
   async function save(signal: AbortSignal) {
     if (readOnly) return
     try {
-      const opinion = await opinionsApi.save(
+      const opinion = await api.save(
         candidate.campaignId,
         candidate.candidateEmployeeId,
         content,
@@ -43,14 +49,10 @@ function OpinionForm({
     } catch (error) {
       if (error instanceof ApiError && error.status === 409) {
         setBlocked(true)
-        const current = await opinionsApi.get(
-          candidate.campaignId,
-          candidate.candidateEmployeeId,
-          signal,
-        )
+        const current = await api.get(candidate.campaignId, candidate.candidateEmployeeId, signal)
         if (!signal.aborted) {
           setStatus(current)
-          onSaved()
+          ;(onConflict ?? onSaved)()
         }
       }
       throw error
@@ -81,7 +83,9 @@ function OpinionForm({
             void operation.run(save)
           }}
         >
-          <label htmlFor="opinion-content">Opinión de tu departamento ({content.length}/500)</label>
+          <label htmlFor="opinion-content">
+            {label} ({content.length}/500)
+          </label>
           <textarea
             id="opinion-content"
             className="w-full rounded-lg border p-3"
@@ -118,24 +122,33 @@ function OpinionForm({
 export function OpinionEditor({
   candidate,
   readOnly = false,
+  api = opinionsApi,
+  label = 'Opinión de tu departamento',
   onSaved,
+  onConflict,
   onClose,
 }: {
+  api?: Pick<typeof opinionsApi, 'get' | 'save'>
+  label?: string
   readOnly?: boolean
   candidate: OpinionCandidate
   onSaved: () => void
+  onConflict?: () => void
   onClose: () => void
 }) {
   const query = useQuery(candidate.campaignId + candidate.candidateEmployeeId, (signal) =>
-    opinionsApi.get(candidate.campaignId, candidate.candidateEmployeeId, signal),
+    api.get(candidate.campaignId, candidate.candidateEmployeeId, signal),
   )
   if (query.data)
     return (
       <OpinionForm
+        api={api}
+        label={label}
         readOnly={readOnly}
         candidate={candidate}
         initial={query.data}
         onSaved={onSaved}
+        onConflict={onConflict}
         onClose={onClose}
       />
     )

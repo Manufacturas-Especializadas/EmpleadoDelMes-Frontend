@@ -1,4 +1,4 @@
-import type { PaginatedResponse } from '@/shared/api/types'
+﻿import type { PaginatedResponse } from '@/shared/api/types'
 export interface ReviewCandidate {
   campaignId: string
   candidateEmployeeId: string
@@ -8,6 +8,8 @@ export interface ReviewCandidate {
   humanResourcesHasOpinion: boolean
   safetyHasOpinion: boolean
   qualityHasOpinion: boolean
+  immediateSupervisorHasOpinion: boolean
+  hasEvaluator: boolean
 }
 export interface ReviewNomination {
   id: string
@@ -27,6 +29,7 @@ export interface ReviewOpinion {
 export interface ReviewDetail {
   campaignId: string
   evaluationMonth: string
+  evaluatorEmployeeId: string | null
   candidateEmployeeId: string
   candidatePayrollNumber: string
   candidateFullName: string

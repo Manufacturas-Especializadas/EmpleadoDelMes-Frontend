@@ -361,18 +361,19 @@ function handle(
     requireRole(['Administrator'])
     if (path === '/api/admin/candidates/review') {
       checkCampaign(url.searchParams.get('campaignId'))
-      const items: ReviewCandidate[] = employees
-        .filter((item) => eligible(item.id) && matches(item.fullName, item.payrollNumber))
-        .map((item) => ({
-          campaignId,
-          candidateEmployeeId: item.id,
-          candidatePayrollNumber: item.payrollNumber,
-          candidateFullName: item.fullName,
-          validNominationsCount: count(item.id),
-          humanResourcesHasOpinion: opinions.has('HumanResources' + item.id),
-          safetyHasOpinion: opinions.has('Safety' + item.id),
-          qualityHasOpinion: opinions.has('Quality' + item.id),
-        }))
+      const items: Omit<ReviewCandidate, 'immediateSupervisorHasOpinion' | 'hasEvaluator'>[] =
+        employees
+          .filter((item) => eligible(item.id) && matches(item.fullName, item.payrollNumber))
+          .map((item) => ({
+            campaignId,
+            candidateEmployeeId: item.id,
+            candidatePayrollNumber: item.payrollNumber,
+            candidateFullName: item.fullName,
+            validNominationsCount: count(item.id),
+            humanResourcesHasOpinion: opinions.has('HumanResources' + item.id),
+            safetyHasOpinion: opinions.has('Safety' + item.id),
+            qualityHasOpinion: opinions.has('Quality' + item.id),
+          }))
       return response(page(items, url))
     }
     const parts = path.split('/').filter(Boolean)
@@ -380,7 +381,7 @@ function handle(
     const candidate = findEmployee(parts[4])
     if (!eligible(candidate.id))
       fail(404, 'No encontramos un candidato elegible para esta revisión.')
-    const detail: ReviewDetail = {
+    const detail: Omit<ReviewDetail, 'evaluatorEmployeeId'> = {
       campaignId,
       evaluationMonth: campaign.evaluationMonth,
       candidateEmployeeId: candidate.id,
