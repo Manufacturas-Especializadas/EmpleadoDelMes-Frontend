@@ -1,5 +1,15 @@
-﻿import { Link, Navigate, Outlet, Route, Routes } from 'react-router'
-import { home, roles, useAuth } from '@/features/auth/session'
+import { useEffect } from 'react'
+import { LoadingState } from '@/shared/components/LoadingState'
+import { ErrorState } from '@/shared/components/ErrorState'
+import { Link, Navigate, Outlet, Route, Routes, useNavigate } from 'react-router'
+import {
+  home,
+  initializeSession,
+  logout,
+  roles,
+  useAuth,
+  useSessionInitialization,
+} from '@/features/auth/session'
 import { AuthPage } from '@/features/auth'
 import { HomePage } from './pages/HomePage'
 import { AppLayout } from './AppLayout'
@@ -36,6 +46,45 @@ function Message({ title }: { title: string }) {
   )
 }
 export default function App() {
+  const initialization = useSessionInitialization()
+  const navigate = useNavigate()
+  useEffect(() => {
+    void initializeSession()
+  }, [])
+  function goToLogin() {
+    logout()
+    navigate('/login', { replace: true })
+  }
+  if (initialization.status !== 'ready') {
+    return (
+      <main className="mx-auto max-w-xl space-y-4 p-4 sm:p-8">
+        <h1 className="text-2xl font-semibold">Empleado del Mes</h1>
+        {initialization.status === 'initializing' ? (
+          <>
+            <LoadingState message="Restaurando tu sesión…" />
+            <button className="secondary" onClick={goToLogin}>
+              Cancelar e iniciar sesión
+            </button>
+          </>
+        ) : (
+          <>
+            <ErrorState
+              message={initialization.message ?? 'No pudimos restaurar tu sesión.'}
+              onRetry={() => {
+                void initializeSession()
+              }}
+            />
+            <p className="text-sm text-muted">
+              Puedes reintentar la conexión o descartar esta sesión e iniciar sesión nuevamente.
+            </p>
+            <button className="secondary" onClick={goToLogin}>
+              Ir al inicio de sesión
+            </button>
+          </>
+        )}
+      </main>
+    )
+  }
   return (
     <Routes>
       <Route path="/" element={<Start />} />
