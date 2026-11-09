@@ -1,4 +1,4 @@
-﻿import { SuccessMessage } from '@/shared/components/SuccessMessage'
+import { SuccessMessage } from '@/shared/components/SuccessMessage'
 import { useState } from 'react'
 import { EmployeeSearch, type Employee } from '@/features/employees'
 import { usersApi } from '../usersApi'
@@ -10,11 +10,12 @@ export function CreateAccount({
   onClose,
   onSaved,
 }: {
-  kind: 'sponsor' | 'department'
+  kind: 'sponsor' | 'department' | 'organizer'
   onClose: () => void
   onSaved: () => void
 }) {
   const [employee, setEmployee] = useState<Employee | null>(null)
+  const [userName, setUserName] = useState('')
   const [role, setRole] = useState<DepartmentRole>('HumanResources')
   const [created, setCreated] = useState<CreatedAccount | null>(null)
   const [copyMessage, setCopyMessage] = useState('')
@@ -23,7 +24,9 @@ export function CreateAccount({
     const result =
       kind === 'sponsor'
         ? await usersApi.sponsor(employee!.id, signal)
-        : await usersApi.department(role, signal)
+        : kind === 'organizer'
+          ? await usersApi.organizer(userName.trim(), signal)
+          : await usersApi.department(role, signal)
     if (!signal.aborted) {
       setCreated(result)
       onSaved()
@@ -37,7 +40,7 @@ export function CreateAccount({
           ? 'Cuenta creada'
           : kind === 'sponsor'
             ? 'Crear patrocinador'
-            : 'Crear cuenta departamental'
+            : kind === 'organizer' ? 'Crear organizador' : 'Crear cuenta departamental'
       }
       onClose={() => {
         setCreated(null)
@@ -91,6 +94,13 @@ export function CreateAccount({
                 </p>
               )}
             </>
+          ) : kind === 'organizer' ? (
+            <label>
+              Nombre de usuario
+              <input className="block w-full rounded border p-3" value={userName}
+                maxLength={256} autoComplete="off" disabled={operation.busy}
+                onChange={(event) => setUserName(event.target.value)} />
+            </label>
           ) : (
             <label>
               Departamento
@@ -106,11 +116,11 @@ export function CreateAccount({
               </select>
             </label>
           )}
-          <p>El nombre de usuario lo determina el servidor.</p>
+          {kind !== 'organizer' && <p>El nombre de usuario lo determina el servidor.</p>}
           {operation.error && <p role="alert">{operation.error}</p>}
           <button
             className="primary"
-            disabled={operation.busy || (kind === 'sponsor' && !employee)}
+            disabled={operation.busy || (kind === 'sponsor' && !employee) || (kind === 'organizer' && !userName.trim())}
             onClick={() => void operation.run(create)}
           >
             Crear cuenta

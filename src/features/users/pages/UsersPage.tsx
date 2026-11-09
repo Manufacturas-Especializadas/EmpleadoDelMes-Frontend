@@ -1,4 +1,4 @@
-﻿import { useState } from 'react'
+import { useState } from 'react'
 import { usersApi } from '../usersApi'
 import { CreateAccount } from '../components/CreateAccount'
 import { AccountDetail } from '../components/AccountDetail'
@@ -17,7 +17,7 @@ export function UsersPage() {
   const query = useQuery(JSON.stringify(filter), (signal) =>
     usersApi.list(filter.term, filter.role, filter.page, signal),
   )
-  const [create, setCreate] = useState<'sponsor' | 'department' | null>(null),
+  const [create, setCreate] = useState<'sponsor' | 'department' | 'organizer' | null>(null),
     [id, setId] = useState<string | null>(null)
   return (
     <div>
@@ -25,6 +25,9 @@ export function UsersPage() {
         title="Usuarios"
         actions={
           <div className="flex flex-wrap gap-3">
+            <button className="secondary" onClick={() => setCreate('organizer')}>
+              Crear organizador
+            </button>
             <button className="primary" onClick={() => setCreate('sponsor')}>
               Crear patrocinador
             </button>
@@ -50,8 +53,8 @@ export function UsersPage() {
             onChange={(event) => setRole(event.target.value)}
           >
             <option value="">Todos</option>
-            {['Administrator', 'Sponsor', 'HumanResources', 'Safety', 'Quality'].map((item) => (
-              <option key={item}>{item}</option>
+            {['Administrator', 'Organizer', 'Sponsor', 'HumanResources', 'Safety', 'Quality'].map((item) => (
+              <option key={item} value={item}>{item === 'Organizer' ? 'Organizador' : item}</option>
             ))}
           </select>
         </label>
@@ -72,7 +75,7 @@ export function UsersPage() {
                 header: 'Empleado',
                 cell: (row) => row.employeeFullName ?? 'Sin vínculo',
               },
-              { id: 'roles', header: 'Roles', cell: (row) => row.roles.join(', ') },
+              { id: 'roles', header: 'Roles', cell: (row) => row.roles.map((role) => role === 'Organizer' ? 'Organizador' : role).join(', ') },
               {
                 id: 'status',
                 header: 'Estado',

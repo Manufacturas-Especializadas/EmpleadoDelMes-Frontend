@@ -1,9 +1,9 @@
-﻿import { Icon } from '@/shared/components/Icon'
+import { Icon } from '@/shared/components/Icon'
 import { useRef, useState } from 'react'
 import { Link, NavLink, Outlet, useLocation } from 'react-router'
-import { logout, roles, useAuth } from '@/features/auth'
+import { home, logout, roles, useAuth } from '@/features/auth'
 import { BrandLogo } from '@/shared/components/BrandLogo'
-import { adminModules, navigationIcon, sponsorModules } from './navigation'
+import { managementModules, navigationIcon, sponsorModules } from './navigation'
 export function AppLayout() {
   const user = useAuth()!
   const location = useLocation()
@@ -11,7 +11,7 @@ export function AppLayout() {
   const toggle = useRef<HTMLButtonElement>(null)
   const open = openAt === location.key
   const allowedRoles = roles.filter((role) => user.roles.includes(role.name))
-  const modules = user.roles.includes('Administrator') ? adminModules : []
+  const modules = managementModules(user.roles)
   const current = modules.find(
     (item) => location.pathname === item.path || location.pathname.startsWith(`${item.path}/`),
   )
@@ -21,7 +21,7 @@ export function AppLayout() {
       items: allowedRoles.map((role) => ({
         path: role.path,
         label:
-          role.name === 'Administrator'
+          ['Administrator', 'Organizer'].includes(role.name)
             ? 'Inicio'
             : role.name === 'Sponsor'
               ? 'Mis postulaciones'
@@ -140,7 +140,7 @@ export function AppLayout() {
               aria-label="Ruta de navegación"
               className="mb-6 flex flex-wrap gap-2 text-sm text-muted"
             >
-              <Link className="hover:underline" to="/admin">
+              <Link className="hover:underline" to={home(user)}>
                 Inicio
               </Link>
               <span aria-hidden="true">/</span>

@@ -1,4 +1,4 @@
-﻿import { ApiError } from '@/shared/api/httpClient'
+import { ApiError } from '@/shared/api/httpClient'
 import { useSyncExternalStore } from 'react'
 import { authApi } from './authApi'
 import { readRefreshToken, storeRefreshToken } from './refreshTokenStorage'
@@ -159,6 +159,7 @@ export async function initializeSession(): Promise<void> {
 
 export const roles = [
   { name: 'Administrator', path: '/admin', label: 'Administración' },
+  { name: 'Organizer', path: '/organizer', label: 'Organizador' },
   { name: 'Sponsor', path: '/sponsor', label: 'Patrocinador' },
   { name: 'HumanResources', path: '/human-resources', label: 'Recursos Humanos' },
   { name: 'Safety', path: '/safety', label: 'Seguridad' },
