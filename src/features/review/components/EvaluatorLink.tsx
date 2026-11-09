@@ -1,4 +1,5 @@
-﻿import { useState } from 'react'
+import { useState } from 'react'
+import { useAuth } from '@/features/auth'
 import { Link } from 'react-router'
 import { request } from '@/shared/api/httpClient'
 import { employeesApi } from '@/features/employees/employeesApi'
@@ -21,10 +22,11 @@ export function EvaluatorLink({
   evaluatorId: string | null
   onChanged: () => void
 }) {
+  const isAdministrator = useAuth()!.roles.includes('Administrator')
   const employee = useQuery(
     evaluatorId ?? '',
     (signal) => employeesApi.get(evaluatorId!, signal),
-    !!evaluatorId && !assignmentDemo,
+    !!evaluatorId && isAdministrator && !assignmentDemo,
   )
   const campaign = useQuery(
     campaignId,
@@ -45,7 +47,7 @@ export function EvaluatorLink({
               {employee.data.fullName} · {employee.data.payrollNumber}
             </p>
           ) : (
-            <p>Evaluador vinculado · consultando datos</p>
+            <p>{isAdministrator ? 'Consultando datos del evaluador' : 'Evaluador vinculado a esta convocatoria'}</p>
           )}
           {employee.error && <ErrorState message={employee.error} onRetry={employee.reload} />}
         </>
@@ -56,9 +58,9 @@ export function EvaluatorLink({
             Primero asigna al colaborador a su patrocinador. Después vincula explícitamente la
             asignación vigente a esta convocatoria.
           </p>
-          <Link to="/admin/sponsor-assignments" className="secondary">
+          {isAdministrator && <Link to="/admin/sponsor-assignments" className="secondary">
             Administrar asignaciones
-          </Link>
+          </Link>}
           {campaign.error && <ErrorState message={campaign.error} onRetry={campaign.reload} />}
           <button
             className="primary"

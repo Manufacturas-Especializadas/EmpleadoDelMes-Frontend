@@ -1,4 +1,5 @@
-﻿import { SponsorAssignmentsPage } from '@/features/sponsorAssignments/SponsorAssignmentsPage'
+import { recognitionRoles } from './navigation'
+import { SponsorAssignmentsPage } from '@/features/sponsorAssignments/SponsorAssignmentsPage'
 import { SupervisorOpinionsPage } from '@/features/supervisorOpinions/SupervisorOpinionsPage'
 import { useEffect } from 'react'
 import { LoadingState } from '@/shared/components/LoadingState'
@@ -26,11 +27,12 @@ import { EmployeeImportPage, SponsorImportPage } from '@/features/imports'
 import { AdminNominationsPage } from '@/features/adminNominations'
 import { CampaignAutomationPage } from '@/features/campaignAutomation/CampaignAutomationPage'
 
-function Guard({ role }: { role?: string }) {
+function Guard({ role, allowedRoles }: { role?: string; allowedRoles?: string[] }) {
   const user = useAuth()
   if (!user) return <Navigate to="/login" replace />
   if (user.mustChangePassword) return <Navigate to="/change-password" replace />
   if (role && !user.roles.includes(role)) return <Navigate to="/access-denied" replace />
+  if (allowedRoles && !allowedRoles.some((item) => user.roles.includes(item))) return <Navigate to="/access-denied" replace />
   return <Outlet />
 }
 function Start() {
@@ -114,21 +116,23 @@ export default function App() {
           <Route element={<Guard role="Sponsor" />}>
             <Route path="/sponsor/my-employees" element={<SupervisorOpinionsPage />} />
           </Route>
+          <Route element={<Guard allowedRoles={recognitionRoles} />}>
+            <Route path="/admin/campaigns" element={<CampaignsPage />} />
+            <Route path="/admin/campaigns/:id" element={<CampaignDetailPage />} />
+            <Route path="/admin/preselections" element={<PreselectionsPage />} />
+            <Route path="/admin/review" element={<ReviewPage />} />
+            <Route path="/admin/nominations" element={<AdminNominationsPage />} />
+          </Route>
           <Route element={<Guard role="Administrator" />}>
             <Route path="/admin/sponsor-assignments" element={<SponsorAssignmentsPage />} />
             <Route
               path="/admin/settings/campaign-automation"
               element={<CampaignAutomationPage />}
             />
-            <Route path="/admin/campaigns" element={<CampaignsPage />} />
-            <Route path="/admin/campaigns/:id" element={<CampaignDetailPage />} />
-            <Route path="/admin/preselections" element={<PreselectionsPage />} />
-            <Route path="/admin/review" element={<ReviewPage />} />
             <Route path="/admin/employees" element={<EmployeesPage />} />
             <Route path="/admin/users" element={<UsersPage />} />
             <Route path="/admin/imports/employees" element={<EmployeeImportPage />} />
             <Route path="/admin/imports/sponsors" element={<SponsorImportPage />} />
-            <Route path="/admin/nominations" element={<AdminNominationsPage />} />
           </Route>
         </Route>
       </Route>

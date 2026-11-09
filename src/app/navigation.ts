@@ -1,4 +1,4 @@
-﻿import type { IconName } from '@/shared/components/Icon'
+import type { IconName } from '@/shared/components/Icon'
 export const sponsorModules = [{ path: '/sponsor/my-employees', label: 'Mis colaboradores' }]
 export const adminModules = [
   {
@@ -76,4 +76,12 @@ export function navigationIcon(path: string): IconName {
   if (path === '/change-password') return 'lock'
   if (['/human-resources', '/safety', '/quality'].includes(path)) return 'message'
   return 'home'
+}
+
+export const recognitionRoles = ['Administrator', 'Organizer']
+export function managementModules(roles: string[]) {
+  if (roles.includes('Administrator')) return adminModules
+  return roles.includes('Organizer')
+    ? adminModules.filter((item) => item.group === 'Proceso de reconocimiento')
+    : []
 }

@@ -3,6 +3,10 @@ import type { PaginatedResponse } from '@/shared/api/types'
 import { queryString } from '@/shared/utils/queryString'
 import type { Account, AccountListItem, CreatedAccount, DepartmentRole } from './types'
 export const usersApi = {
+  organizer: async (userName: string, signal: AbortSignal) =>
+    (await request<CreatedAccount>('/api/users/organizers', {
+      method: 'POST', body: { userName }, authenticated: true, signal,
+    })).data,
   list: async (term: string, role: string, pageNumber: number, signal: AbortSignal) => {
     const params = new URLSearchParams(queryString({ term, pageNumber }))
     if (role) params.set('role', role)

@@ -1,10 +1,10 @@
-﻿import type { OpinionCampaign } from '@/features/opinions/types'
+import type { OpinionCampaign } from '@/features/opinions/types'
 import { getCampaigns } from '@/features/campaigns/campaignsApi'
 import { opinionsApi } from '@/features/opinions/opinionsApi'
 export type CampaignScope = 'admin' | 'opinions'
 export function canLoadCampaigns(scope: CampaignScope, roles: string[]) {
   return scope === 'admin'
-    ? roles.includes('Administrator')
+    ? roles.some((role) => ['Administrator', 'Organizer'].includes(role))
     : roles.some((role) => ['HumanResources', 'Safety', 'Quality'].includes(role))
 }
 export async function loadCampaignOptions(
